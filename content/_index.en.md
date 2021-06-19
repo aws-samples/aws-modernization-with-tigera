@@ -76,3 +76,4 @@ Use dynamic package capture to collect full packet payload on demand.
 
 {{% notice tip %}}
 To learn more about installing Calico on EKS Cluster, please click [here](https://docs.aws.amazon.com/eks/latest/userguide/calico.html).
+{{% /notice %}}
