@@ -15,3 +15,10 @@ weight = 15
 5. Using compliance reports to provide proof of compliance.
 6. Using security alerts to notify security and operations teams of any strange, unsanctioned, or anomalous behavior.
 7. Capturing packets on demand for further forensic analysis.
+
+## Learn more about Tigera and Calico
+
+- [Project Calico](https://www.projectcalico.org/) resources
+- [Technical collateral for the workshop on Github](https://github.com/tigera-solutions/tigera-eks-workshop)
+- [Tigera + AWS partnership](https://www.tigera.io/partners/aws/) details
+- [Calico Cloud on AWS Marketplace](https://aws.amazon.com/marketplace/pp/prodview-pq3tgvtlj3wce)
