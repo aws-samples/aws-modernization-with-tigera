@@ -66,7 +66,7 @@ Leverage Calico observability and troubleshooting tools to reduce mean time to r
 
 Configure global reports to satisfy compliance requirements.
 
-### Module 7 - Configure security alerts
+### Module 7 - Use security alerts
 
 Use global alerts to notify security and operations teams about unsanctioned or suspicious activity.
 

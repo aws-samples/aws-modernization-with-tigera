@@ -42,13 +42,8 @@ weight: 17
         rm -vf ~/.aws/credentials
         ```
 
-    c. Unset `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to allow Cloud9 instance to use the configured IAM role.
+    c. Unset `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to allow Cloud9 instance use the configured IAM role.
 
     ```bash
     unset AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
     ```
-    Copy and run (paste with **Ctrl+P**) the commands below.
-   Before running it, review what it does by reading through the comments.
-
-
-     
