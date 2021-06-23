@@ -37,7 +37,10 @@ For the instructor-led workshop you will get a pre-provisioned EKS cluster and c
 
     >Do not proceed if the role is `NOT` valid, but rather go back and review the configuration steps in previous module. The proper role configuration is required for Cloud9 instance in order to use `kubectl` CLI with EKS cluster.
 
-2. Create AWS key pair.
+2. *[Optional]* Create AWS key pair.
+
+    >Follow this step only if want to access EKS nodes via SSH and want to use your own SSH key. Otherwise, skip this step.  
+    >If you do configure your AWS key pair, make sure to uncomment `publicKeyName` parameter in the cluster configuration manifest at the next step.
 
     In order to test host port protection with Calico network policy we will create EKS nodes with SSH access. For that we need to create EC2 key pair.
 
@@ -79,7 +82,7 @@ For the instructor-led workshop you will get a pre-provisioned EKS cluster and c
       ssh:
         enableSsm: true
         # uncomment lines below to allow SSH access to the nodes using existing EC2 key pair
-        publicKeyName: ${KEYPAIR_NAME}
+        # publicKeyName: ${KEYPAIR_NAME}
         allow: true
 
     # enable all of the control plane logs:

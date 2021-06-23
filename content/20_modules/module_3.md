@@ -1,79 +1,82 @@
 +++
-title = "Module 3: Using egress access controls"
+title = "Module 3: Use security alerts and leverage dynamic packet capture"
 chapter = false
 weight = 12
 +++
 
->**Estimated time:** 15 min
+
+>**Estimated time:** 20 min
 
 ## Learning objectives
 
-Configure fine-grained egress access for specific workloads.
+- Use global alerts to notify security and operations teams about unsanctioned or suspicious activity.
+- Configure packet capture for specific pods to capture packet payload for further forensic analysis and explore the captured payload.
 
-## Steps
+## Use security alerts
 
-1. Test connectivity within the cluster and to the external endpoint.
+{{% notice info %}}
+We deployed security alerts in the first module. While we were implementing the use cases, some of them have triggered the alerts and now we can explore them.
+{{% /notice %}}
 
-    a. Test connectivity between `dev/centos` pod and `default/frontend` pod.
+1. Review alerts manifests.
 
-    ```bash
-    # test connectivity from dev namespace to default namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
-    ```
+    Navigate to `demo/50-alerts` path and review YAML manifests that represent alerts definitions. Each file containes an alert template and alert definition. Alerts templates can be used to quickly create an alert definition in the UI.
 
-    b. Test connectivity from `dev/centos` to the external endpoints.
+2. View triggered alerts.
 
-    ```bash
-    # test connectivity from dev namespace to the Internet
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -skI https://api.twilio.com 2>/dev/null | grep -i http'
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://www.google.com 2>/dev/null | grep -i http'
-    ```
+    Open `Alerts` view to see all triggered alerts in the cluster. Review the generated alerts.
 
-    The access should be denied as the policies configured in previous module do not allow it.
+    ![alerts view](../images/alerts-view.png)
 
-2. Implement egress policy to allow egress access from a workload in one namespace, e.g. `dev/centos`, to a service in another namespace, e.g. `default/frontend`.
+    You can also review the alerts configuration and templates by navigating to alerts configuration in the top right corner.
 
-    a. Deploy egress policy.
+## Leverage dynamic packet capture
 
-    ```bash
-    kubectl apply -f demo/20-egress-access-controls/centos-to-frontend.yaml
-    ```
+{{% notice tip %}}
+Refer to [packet capture](https://docs.tigera.io/visibility/packetcapture) documentation for more details about this capability.
+{{% /notice %}}
 
-    b. Test connectivity between `dev/centos` pod and `default/frontend` service.
+1. Configure packet capture.
 
-    ```bash
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
-    ```
+    Navigate to `demo/60-packet-capture` and review YAML manifests that represent packet capture definition. Each packet capture is configured by deploing a `PacketCapture` resource that targets endpoints using `selector` and `labels`.
 
-    The access should be allowed once the egress policy is in place.
-
-3. Implement `DNS policy` to allow the external endpoint access from a specific workload, e.g. `dev/centos`.
-
-    a. Apply a policy to allow access to `api.twilio.com` endpoint using DNS rule.
+    Deploy packet capture definition to capture packets for `dev/nginx` pods.
 
     ```bash
-    # deploy dns policy
-    kubectl apply -f demo/20-egress-access-controls/dns-policy.yaml
-
-    # test egress access to api.twilio.com
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -skI https://api.twilio.com 2>/dev/null | grep -i http'
-    # test egress access to www.google.com
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -skI https://www.google.com 2>/dev/null | grep -i http'
+    kubectl apply -f demo/60-packet-capture/nginx-pcap.yaml
     ```
 
-    Access to the `api.twilio.com` endpoint should be allowed by the DNS policy but not to any other external endpoints like `www.google.com` unless we modify the policy to include that domain name.
+    >Once the `PacketCapture` resource is deployed, Calico starts capturing packets for all endpoints configured in the `selector` field.
 
-    Open `Policies Board` in the Manager UI and review `allow-twilio-access` policy to see how DNS policy rule is configured.
-
-    b. Edit the policy to use a `NetworkSet` instead of inline DNS rule.
+    Stop packet capture by removing the `PacketCapture` resource.
 
     ```bash
-    # deploy network set
-    kubectl apply -f demo/20-egress-access-controls/netset.external-apis.yaml
-    # deploy DNS policy using the network set
-    kubectl apply -f demo/20-egress-access-controls/dns-policy.netset.yaml
+    kubectl delete -f demo/60-packet-capture/nginx-pcap.yaml
     ```
 
-    Navigate to `Network Sets` view in the Manager UI and review deployed network set `external-apis`. Then navigate to `Policies Board` and view the changes in the `allow-twilio-access` policy.
+2. Install `calicoctl` CLI
 
-    >As a bonus example, you can modify the `external-apis` network set to include `*.google.com` domain name which would allow access to Google subdomains. If you do it, you would allow acess to subdomains like `www.google.com`, `docs.google.com`, etc.
+    The easiest way to retrieve captured `*.pcap` files is to use [calicoctl](https://docs.tigera.io/maintenance/clis/calicoctl/) CLI.
+
+    ```bash
+    # download and configure calicoctl
+    curl -o calicoctl -O -L https://docs.tigera.io/download/binaries/v3.7.0/calicoctl
+    chmod +x calicoctl
+    sudo mv calicoctl /usr/local/bin/
+    calicoctl version
+    ```
+
+3. Fetch and review captured payload.
+
+    >The captured `*.pcap` files are stored on the hosts where pods are running at the time the `PacketCapture` resource is active.
+
+    Retrieve captured `*.pcap` files and review the content.
+
+    ```bash
+    # get pcap files
+    calicoctl captured-packets copy dev-capture-nginx --namespace dev
+
+    ls dev-nginx*
+    # view *.pcap content
+    tcpdump -Xr dev-nginx-XXXXXX.pcap
+    ```

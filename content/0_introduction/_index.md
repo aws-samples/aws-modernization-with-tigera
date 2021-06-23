@@ -9,7 +9,7 @@ Tigera is the industry leader in Kubernetes security and observability, and is a
 
 ## Most common problems that Calico helps to solve
 
-Calico capabilities range from providing a pluggable and reliable networking layer that "just works", to securing ingress and egress for Kubernetes applications and services, to using full spectrum of Calico security capabilities to implement and enforce **zero-trust security** for your Kubernetes environments.  
+Calico capabilities range from providing a pluggable and reliable networking layer that "just works", to securing ingress and egress for Kubernetes applications and services, to using full spectrum of Calico security capabilities to implement and enforce zero-trust security for your Kubernetes environments.  
 
 Here are a few of the most common Calico capabilities used by Calico users:
 
@@ -43,9 +43,9 @@ In this workshop we are going to focus on these main use cases:
 - **Egress access controls**, using DNS policy to access external resources by their fully qualified domain names (FQDN) to prevent unauthorized access to the application
 - **Host micro-segmentation**, leveraging Calico policies to protect host ports and host based services for a multi-tenant environment
 - **Observability**, exploring various logs and application level metrics collected by Calico through for live visualization of communication between different components in Kubernetes environment.
-- **Compliance**, providing proof of security compliance to meet organizational regulatory requirements
 - **Security alerts**, leveraging Calico global alerting framework to notify security and operations teams of any security incidents or anomalous behaviors.
 - **Dynamic packet capture**, collecting full payload of the flows on demand for further forensic analysis.
+- **Compliance**, providing proof of security compliance to meet organizational regulatory requirements
 
 ## Summary
 
