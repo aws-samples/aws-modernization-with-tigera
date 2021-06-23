@@ -1,90 +1,62 @@
 +++
-title = "Module 4: Securing Kubernetes host ports"
+title = "Module 4: Use compliance reports"
 chapter = false
 weight = 14
 +++
 
-## Securing Kubernetes host ports
+>**Estimated time:** 15 min
 
->**Estimated time:** 10 min
+## Learning objectives
 
-Calico network policies not only can secure pod to pod communications but also can be applied to EKS hosts to protect host based services and ports. For more details refer to [Protect Kubernetes nodes](https://docs.tigera.io/security/kubernetes-nodes) documentation.
+Generate Compliance reports for regulatory requirements and policy violations.
 
 ## Steps
 
-1. Open a port of NodePort service for public access on EKS node.
+1. Use `Compliance Reports` view to see all generated reports.
 
-    For the demo purpose we are going to expose the `default/frontend` service via the `NodePort` service type to open it for the public access.
+    >We deployed a few compliance reports in the first module and by this time a few reports should have been already generated. If you don't see any reports, you can manually kick off report generation task. Follow the steps below if you need to do so.
 
-    ```bash
-    # expose the frontend service via the NodePort service type
-    kubectl expose deployment frontend --type=NodePort --name=frontend-nodeport --overrides='{"apiVersion":"v1","spec":{"ports":[{"nodePort":30080,"port":80,"targetPort":8080}]}}'
+    Calico provides `GlobalReport` resource to offer [Compliance reports](https://docs.tigera.io/compliance/compliance-reports/) capability. There are several types of reports that you can configure:
 
-    # open access to the port in AWS security group
-    CLUSTER_NAME='tigera-workshop' # adjust the name if you used a different name for your EKS cluster
-    AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
-    # pick one EKS node and use it's ID to get securigy group
-    SG_ID=$(aws ec2 describe-instances --region $AWS_REGION --filters "Name=tag:Name,Values=$CLUSTER_NAME*" "Name=instance-state-name,Values=running" --query 'Reservations[0].Instances[*].NetworkInterfaces[0].Groups[0].GroupId' --output text --output text)
-    # open SSH port in the security group for public access
-    aws ec2 authorize-security-group-ingress --region $AWS_REGION --group-id $SG_ID --protocol tcp --port 30080 --cidr 0.0.0.0/0
+    - CIS benchmarks
+    - Inventory
+    - Network access
+    - Policy audit
 
-    # get public IP of an EKS node
-    PUB_IP=$(aws ec2 describe-instances --region $AWS_REGION --filters "Name=tag:Name,Values=$CLUSTER_NAME*" "Name=instance-state-name,Values=running" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text --output text)
-    # test connection to SSH port
-    nc -zv $PUB_IP 30080
-    ```
+    >When using EKS cluster, you need to [enable and configure audit log collection](https://docs.tigera.io/compliance/compliance-reports/compliance-managed-cloud#enable-audit-logs-in-eks) on AWS side in order to get the data captured for the `policy-audit` reports.
 
-    >It can take a moment for the node port to become accessible.
+    A compliance report could be configured to include only specific endpoints leveraging endpoint labels and selectors. Each report has the `schedule` field that determines how often the report is going to be generated and sets the timeframe for the data to be included into the report.
 
-    If the SSH port was configured correctly, the `nc` command should show you that the port is open.
+    Compliance reports organize data in a CSV format which can be downloaded and moved to a long term data storage to meet compliance requirements.
 
-2. Enable `HostEndpoint` auto-creation for EKS cluster.
+    ![compliance report](../images/compliance-report.png)
 
-    When working with managed Kubernetes services, such as EKS, we recommend using `HostEndpoint` (HEP) auto-creation feature which allows you to automate the management of `HostEndpoint` resources for managed Kubernetes clusters whenever the cluster is scaled.
+2. *[Optional]* Manually kick off report generation task.
 
-    >Before you enable HEP auto-creation feature, make sure there are no `HostEndpoint` resources manually defined for your cluster: `kubectl get hostendpoints`.
+    It is possible to kick off report generation via a one off job.
 
     ```bash
-    # check whether auto-creation for HEPs is enabled. Default: Disabled
-    kubectl get kubecontrollersconfiguration.p default -ojsonpath='{.status.runningConfig.controllers.node.hostEndpoint.autoCreate}'
+    # get Calico version
+    CALICO_VERSION=$(kubectl get clusterinformation default -ojsonpath='{.spec.cnxVersion}')
+    # set report names
+    CIS_REPORT_NAME='daily-cis-results'
+    INVENTORY_REPORT_NAME='cluster-inventory'
+    NETWORK_ACCESS_REPORT_NAME='cluster-network-access'
+    
+    # enable if you configured audit logs for EKS cluster and uncommented policy audit reporter job
+    # you also need to add variable replacement in the sed command below
+    # POLICY_AUDIT_REPORT_NAME='cluster-policy-audit'
 
-    # enable HEP auto-creation
-    kubectl patch kubecontrollersconfiguration.p default -p '{"spec": {"controllers": {"node": {"hostEndpoint": {"autoCreate": "Enabled"}}}}}'
-    # verify that each node got a HostEndpoint resource created
-    kubectl get hostendpoints
-    ```
+    # get compliance reporter token
+    COMPLIANCE_REPORTER_TOKEN=$(kubectl get secrets -n tigera-compliance | grep 'tigera-compliance-reporter-token*' | awk '{print $1;}')
 
-3. Implement a Calico policy to control access to the service of NodePort type.
-
-    Deploy a policy that only allows access to the node port from the Cloud9 instance.
-
-    ```bash
-    # from your local shell test connection to the node port, i.e. 30080, using netcat or telnet or other connectivity testing tool
-    EKS_NODE_PUB_IP=XX.XX.XX.XX
-    nc -zv $EKS_NODE_PUB_IP 30080
-
-    # get public IP of Cloud9 instance in the Cloud9 shell
-    CLOUD9_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-    # deploy HEP policy
-    sed -e "s/\${CLOUD9_IP}/${CLOUD9_IP}\/32/g" demo/30-secure-hep/frontend-nodeport-access.yaml | kubectl apply -f -
-    # test access from Cloud9 shell
-    nc -zv $EKS_NODE_PUB_IP 30080
-    ```
-
-    Once the policy is implemented, you should not be able to access the node port `30080` from your local shell, but you should be able to access it from the Cloud9 shell.
-
-    >Note that in order to control access to the NodePort service, you need to enable `preDNAT` and `applyOnForward` policy settings.
-
-4. *[Bonus task]* Implement a Calico policy to control access to the SSH port on EKS hosts.
-
-    When dealing with SSH and platform required ports, Calico provides a failsafe mechanism to manage such ports so that you don't lock yourself out of the node by accident. Once you configure and test host targeting policy, you can selectively disable [failsafe](https://docs.tigera.io/v3.7/security/protect-hosts#failsafe-rules) ports.
-
-    ```bash
-    # deploy FelixConfiguration to disable fail safe for SSH port
-    kubectl apply -f demo/30-secure-hep/felixconfiguration.yaml
-
-    # get public IP of Cloud9 instance
-    CLOUD9_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-    # allow SSH access to EKS nodes only from the Cloud9 instance
-    sed -e "s/\${CLOUD9_IP}/${CLOUD9_IP}\/32/g" demo/30-secure-hep/ssh-access.yaml | kubectl apply -f -
+    # replace variables in YAML and deploy reporter jobs
+    sed -e "s?<COMPLIANCE_REPORTER_TOKEN>?$COMPLIANCE_REPORTER_TOKEN?g" \
+      -e "s?<CALICO_VERSION>?$CALICO_VERSION?g" \
+      -e "s?<CIS_REPORT_NAME>?$CIS_REPORT_NAME?g" \
+      -e "s?<INVENTORY_REPORT_NAME>?$INVENTORY_REPORT_NAME?g" \
+      -e "s?<NETWORK_ACCESS_REPORT_NAME>?$NETWORK_ACCESS_REPORT_NAME?g" \
+      -e "s?<REPORT_START_TIME_UTC>?$(date -u -d '1 hour ago' '+%Y-%m-%dT%H:%M:%SZ')?g" \
+      -e "s?<REPORT_END_TIME_UTC>?$(date -u +'%Y-%m-%dT%H:%M:%SZ')?g" \
+      demo/40-compliance-reports/cluster-reporter-jobs.yaml | kubectl apply -f -
     ```

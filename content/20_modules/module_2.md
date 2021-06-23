@@ -1,137 +1,79 @@
 +++
-title = "Module 2: Using security controls"
+title = "Module 2: Observe, monitor and troubleshoot the application"
 chapter = false
 weight = 10
 +++
 
->**Estimated time:** 15 min
+>**Estimated time:** 15-20 min
 
 ## Learning objectives
 
-Leverage network policies to segment connections within Kubernetes cluster and prevent known bad actors from accessing the workloads.
+Use Calico tools to observe, monitor and troubleshoot the application.
 
-## Steps
+## Observability & troubleshooting tools
 
-1. Test connectivity between application components and across application stacks.
+>If you are interested in enabling collection of application layer metrics for your workloads, refer to [Configure L7 logs](https://docs.tigera.io/visibility/elastic/l7/configure) documentation to enable application layer metrics collection.
 
-    a. Test connectivity between workloads within each namespace.
+### Dashboard
 
-    ```bash
-    # test connectivity within dev namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://nginx-svc 2>/dev/null | grep -i http'
+The `Dashboard` view in the Enterprise Manager UI presents high level overview of what's going on in your cluster. The view shows the following information:
 
-    # test connectivity within default namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI frontend 2>/dev/null | grep -i http'
+- Connections, Allowed Bytes and Packets
+- Denied Bytes and Packets
+- Total number of Policies, Endpoints and Nodes
+- Summary of CIS benchmarks
+- Count of triggered alerts
+- Packets by Policy histogram that shows allowed and denied traffic as it is being evaluated by network policies
 
-    kubectl exec -it $(kubectl get po -l app=frontend -ojsonpath='{.items[0].metadata.name}') -c server -- sh -c 'nc -zv productcatalogservice 3550'
-    ```
+![dashboard view](../images/dashboard-view.png)
 
-    b. Test connectivity across namespaces.
+### Policies Board
 
-    ```bash
-    # test connectivity from dev namespace to default namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
+The `Policies Board` shows all policies deployed in the cluster and organized into `policy tiers`. You can control what a user can see and do by configuring Kubernetes RBAC roles which determine what the user can see in this view. You can also use controls to hide away tiers you're not interested in at any given time.
 
-    # test connectivity from default namespace to dev namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI http://nginx-svc.dev 2>/dev/null | grep -i http'
-    ```
+![policies board](../images/policies-board.png)
 
-    c. Test connectivity from each namespace to the Internet.
+By leveraging stats controls you can toggle additional metrics to be listed for each shown policy.
 
-    ```bash
-    # test connectivity from dev namespace to the Internet
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://www.google.com 2>/dev/null | grep -i http'
+![policies board stats](../images/policies-board-stats.png)
 
-    # test connectivity from default namespace to the Internet
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI www.google.com 2>/dev/null | grep -i http'
-    ```
+### Audit timeline
 
-    All of these tests should succeed if there are no policies in place to govern the traffic for `dev` and `default` namespaces.
+The `Timeline` view shows audit trail of created, deleted, or modified resources.
 
-2. Apply staged `default-deny` policy.
+![timeline view](../images/timeline-view.png)
 
-    >Staged `default-deny` policy is a good way of catching any traffic that is not explicitly allowed by a policy without explicitly blocking it.
+### Endpoints
 
-    ```bash
-    kubectl apply -f demo/10-security-controls/staged.default-deny.yaml
-    ```
+The `Endpoints` view lists all endpoints known to Calico. It includes all Kubernetes endpoints, such as Pods, as well as Host endpoints that can represent a Kubernetes host or an external VM or bare metal machine.
 
-    You should be able to view the potential affect of the staged `default-deny` policy if you navigate to the `Dashboard` view in the Enterprise Manager UI and look at the `Packets by Policy` histogram.
+![endpoints view](../images/endpoints-view.png)
 
-    ```bash
-    # make a request across namespaces and view Packets by Policy histogram
-    for i in {1..10}; do kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'; sleep 2; done
-    ```
+### Service Graph
 
-    >The staged policy does not affect the traffic directly but allows you to view the policy impact if it were to be enforced.
+The dynamic `Service Graph` presents network flows from service level perspective. Top level view shows how traffic flows between namespaces as well as external and internal endpoints.
 
-    ![packets by policy histogram](../images/packets-by-policy.png)
+![service graph node view](../images/service-graph-node.png)
 
-3. Apply network policies to control East-West traffic.
+- When you select any node representing a namespace, you will get additional details about the namespace, such as incoming and outgoing traffic, policies evaluating each flow, and DNS metrics.
+- When you select any edge, you will get details about the flows representing that edge.
+- If you expand a namespace by double-clicking on it, you will get the view of all components of the namespace.
 
-    ```bash
-    # deploy dev policies
-    kubectl apply -f demo/dev/policies.yaml
+### Flow Visualizations
 
-    # deploy boutiqueshop policies
-    kubectl apply -f demo/boutiqueshop/policies.yaml
-    ```
+The `Flow Visualizations` view shows all point-to-point flows in the cluster. It allows you to see the cluster traffic from the network point of view.
 
-    Now that we have proper policies in place, we can enforce `default-deny` policy moving closer to zero-trust security configuration. You can either enforce the already deployed staged `default-deny` policy using the `Policies Board` view in the Enterirpse Manager UI, or you can apply an enforcing `default-deny` policy manifest.
+![flow viz view](../images/flow-viz.png)
 
-    ```bash
-    # apply enforcing default-deny policy manifest
-    kubectl apply -f demo/10-security-controls/default-deny.yaml
+### Kibana dashboards
 
-    # you may remove staged default-deny at this point since we have enforced default-deny policy
-    kubectl delete -f demo/10-security-controls/staged.default-deny.yaml
-    ```
+>The Kibana credentials were provided in the output when we joined the cluster to Calico Cloud management plane. If you didn't save that information, refer to [Authenticaion quickstart](https://docs.tigera.io/getting-started/cnx/authentication-quickstart) to retrieve Kibana user password.  
+Note that if you configure [identity provider authentication](https://docs.tigera.io/getting-started/cnx/configure-identity-provider), you won't need to deal with passwords.
 
-4. Test connectivity with policies in place.
+The `Kibana` components comes with Calico commercial offerings and provides you access to raw flow, audit, and dns logs, as well as ability to visualize the collected data in various dashboards.
 
-    a. The only connections between the components within each namespaces should be allowed as configured by the policies.
+![kibana flows](../images/kibana-flow-logs.png)
 
-    ```bash
-    # test connectivity within dev namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://nginx-svc 2>/dev/null | grep -i http'
+Some of the default dashboards you get access to are DNS Logs, Flow Logs, Audit Logs, Kuernetes API calls, L7 HTTP metrics, and others.
 
-    # test connectivity within default namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI frontend 2>/dev/null | grep -i http'
-    ```
-
-    b. The connections across `dev` and `default` namespaces should be **blocked** by the global `default-deny` policy.
-
-    ```bash
-    # test connectivity from dev namespace to default namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
-
-    # test connectivity from default namespace to dev namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI http://nginx-svc.dev 2>/dev/null | grep -i http'
-    ```
-
-    c. The connections to the Internet should be **blocked** by the configured policies.
-
-    ```bash
-    # test connectivity from dev namespace to the Internet
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://www.google.com 2>/dev/null | grep -i http'
-
-    # test connectivity from default namespace to the Internet
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI www.google.com 2>/dev/null | grep -i http'
-    ```
-
-5. Protect workloads from known bad actors.
-
-    Calico offers `GlobalThreatfeed` resource to prevent known bad actors from accessing Kubernetes pods.
-
-    >Calico also offers other intrusion detection capabilities such as Honeypods, Anomaly Detection, and more which are outside of the scope of this workshop. Refer to [Calico use cases](https://www.tigera.io/tigera-products/threat-defense/) for more details about Calico IDS capabilities.
-
-    ```bash
-    # deploy feodo tracker threatfeed
-    kubectl apply -f demo/10-security-controls/feodotracker.threatfeed.yaml
-    # deploy network policy that uses the threadfeed
-    kubectl apply -f demo/10-security-controls/feodo-block-policy.yaml
-
-    # try to ping any of the IPs in from the feodo tracker list
-    IP=$(kubectl get globalnetworkset threatfeed.feodo-tracker -ojson | jq .spec.nets[0] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
-    kubectl -n dev exec -t centos -- sh -c "ping -c1 $IP"
-    ```
+![Calico Elastic dashboards](../images/calico-elastic-dashboards.png)

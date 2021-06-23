@@ -58,6 +58,8 @@ For the instructor-led workshop you will be provided with the Calico Cloud trial
 
 3. Configure Felix for log data collection.
 
+    >[Felix](https://docs.tigera.io/reference/architecture/overview#felix) is one of Calico components that is responsible for configuring routes, ACLs, and anything else required on the host to provide desired connectivity for the endpoints on that host.
+
     ```bash
     kubectl patch felixconfiguration default --type='merge' -p '{"spec":{"policySyncPathPrefix":"/var/run/nodeagent","l7LogsFileEnabled":true}}'
     ```

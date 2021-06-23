@@ -24,6 +24,8 @@ Congrats! You've reached the end of today's workshop.
 
 3. Delete EC2 Key Pair.
 
+    >If you created EC2 key pair, then use commands below to remove it. Otherwise, skip this step.
+
     ```bash
     export KEYPAIR_NAME='<set_keypair_name>'
     aws ec2 delete-key-pair --key-name $KEYPAIR_NAME

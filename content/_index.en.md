@@ -42,37 +42,21 @@ The workshop modules are structured to provide a natural flow helping to configu
 
 >Expected duration to complete the workshop is 90-120 mins.
 
-### Module 1 - Deploy and configure demo applications
+### Module 1 - Deploy and configure demo application
 
-Deploy demo applications and enable Calico capabilities that you will use in later modules.
+Deploy and configure demo application. Secure East-West and North-South traffic for demo application, and protect Kubernetes hosts ports using Calico policies.
 
-### Module 2 - Secure application and services using security controls
-
-Leverage network policies to segment connections within Kubernetes cluster and prevent known bad actors from accessing the workloads.
-
-### Module 3 - Secure outbound connections using egress controls
-
-Configure egress access for specific applications and services.
-
-### Module 4 - Secure Kubernetes hosts using host endpoint protection (HEP)
-
-Secure EKS hosts ports with Calico network policies.
-
-### Module 5 - Explore Calico observability and troubleshooting tools
+### Module 2 - Observe, monitor and troubleshoot the application
 
 Leverage Calico observability and troubleshooting tools to reduce mean time to repair (MTTR) for your Kubernetes applications and services.
 
-### Module 6 - Generate compliance reports
+### Module 3 - Use security alerts and dynamic packet capture
 
-Configure global reports to satisfy compliance requirements.
+Use global alerts to notify security and operations teams about unsanctioned or suspicious activity. Leverage dynamic package capture to collect full packet payload on demand.
 
-### Module 7 - Use security alerts
+### Module 4 - Use compliance reports
 
-Use global alerts to notify security and operations teams about unsanctioned or suspicious activity.
-
-### Module 8 - Configure dynamic packet capture
-
-Use dynamic package capture to collect full packet payload on demand.
+Generate Compliance reports for regulatory requirements and policy violations.
 
 {{% notice tip %}}
 To learn more about installing Calico on EKS Cluster, please click [here](https://docs.aws.amazon.com/eks/latest/userguide/calico.html).
