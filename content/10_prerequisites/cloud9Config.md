@@ -55,3 +55,9 @@ If the IAM role is not valid, <span style="color: red;">**DO NOT PROCEED**</span
 ```
 aws eks update-kubeconfig --name basic-eks --region us-east-1
 ```
+
+3. Test that your kubeconfig file was properly updated by running the following command:
+
+```bash
+kubectl get svc
+```
