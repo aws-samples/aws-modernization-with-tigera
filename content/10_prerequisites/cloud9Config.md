@@ -1,42 +1,57 @@
 ---
-title: "Finish Cloud9 configuration"
+title: "Update IAM settings for your Workspace"
 chapter: false
-weight: 21
+weight: 19
 ---
 
+{{% notice info %}}
+Cloud9 normally manages IAM credentials dynamically. This isn't currently compatible with
+the some AWS services authentication, so we will disable it and rely on the IAM role instead.
 
-Your Cloud9 environment comes prebuilt with a version of Docker that doesn't have the features that we will need for this workshop. Please follow the steps below to install and verify that you have the correct version.
+{{% /notice %}}
 
-1. Open the terminal on Cloud9 and run the following: 
+- Return to your workspace and click the gear icon (in top right corner), or click to open a new tab and choose "Open Preferences"
+- Select **AWS SETTINGS**
+- Turn off **AWS managed temporary credentials**
+- Close the Preferences tab
+![c9disableiam](/images/c9disableiam.png)
 
-2. Ensure your environment has these tools:
 
-    - [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
-    - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-    - [eksctl](https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html)
-    - [EKS kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html)
-    - `jq` and `netcat` utilities
+Let's run the command below, the following actions will take place as we do that: 
 
-    Check whether these tools already present in your environment. If not, install the missing ones.
+- Ensure temporary credentials aren’t already in place.
 
-    ```bash
-    # run these commands to check whether the tools are installed in your environment
-    aws --version
-    git --version
-    eksctl version
-    kubectl version --short --client
+- Remove any existing credentials file.
 
-    # install jq and netcat
-    sudo apt install jq netcat -y
-    jq --version
-    nc --version
-    ```
+- Set the region to work with our desired region.
 
+- Validate that our IAM role is valid. 
+
+```sh
+rm -vf ${HOME}/.aws/credentials
+export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
+export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
+test -n "$AWS_REGION" && echo AWS_REGION is "$AWS_REGION" || echo AWS_REGION is not set
+echo "export ACCOUNT_ID=${ACCOUNT_ID}" | tee -a ~/.bash_profile
+echo "export AWS_REGION=${AWS_REGION}" | 
+tee -a ~/.bash_profile
+aws configure set default.region ${AWS_REGION}
+aws configure get default.region
+aws sts get-caller-identity --query Arn | grep tigera-workshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
+```
+
+If the IAM role is not valid, <span style="color: red;">**DO NOT PROCEED**</span>. Go back and confirm the steps on this page. 
     >For convenience consider configuring [autocompletion for kubectl](https://kubernetes.io/docs/tasks/tools/included/optional-kubectl-configs-bash-linux/#enable-kubectl-autocompletion).
 
-3. Download this repo into your environment:
+1. Download this repo into your environment:
 
     ```bash
     git clone https://github.com/tigera-solutions/tigera-eks-workshop
     cd tigera-eks-workshop
     ```
+
+2. Update your kubeconfig file so that you will be able to interact with your Amazon EKS cluster: 
+
+```
+aws eks update-kubeconfig --name basic-eks --region us-east-1
+```

@@ -8,13 +8,12 @@ weight = 1
 
 ![Calico on EKS](/images/calico-on-eks.png)
 
-## Welcome
 
-[Project Calico](https://www.projectcalico.org/) is a network policy engine for Kubernetes. With Calico network policy enforcement, you can implement network segmentation and tenant isolation. This is useful in multi-tenant environments where you must isolate tenants from each other or when you want to create separate environments for development, staging, and production. Network policies are similar to AWS security groups in that you can create network ingress and egress rules. Instead of assigning instances to a security group, you assign network policies to pods using pod selectors and labels. The following procedure shows you how to install Calico on Linux nodes in your Amazon EKS cluster.
+[Project Calico](https://www.projectcalico.org/) is a network policy engine for Kubernetes. With Calico network policy enforcement, you can implement network segmentation and tenant isolation. This is useful in multi-tenant environments where you must isolate tenants from each other or when you want to create separate environments for development, staging, and production. Network policies are similar to AWS security groups in that you can create network ingress and egress rules. Instead of assigning instances to a security group, you assign network policies to pods using pod selectors and labels. 
 
 ## Learning objectives
 
-During this workshop, we expect attendees to have hands-on experience with Kubernetes security and observability for EKS deployment. You will learn how to design, deploy, and observe security and networking policies in an EKS environment. This ~90-minute hands-on lab provides you with your own provisioned Calico Cloud environment which can be connected with your EKS cluster or AWS EC2 environment running self-managed Kubernetes environment to provide more complete knowledge on how to implement and use:
+During this workshop, we expect attendees to have hands-on experience with Kubernetes security and observability for EKS deployment. You will learn how to design, deploy, and observe security and networking policies in an EKS environment using Calico. This ~90-minute hands-on lab provides you with your own provisioned Calico Cloud environment which can be connected with your EKS cluster or AWS EC2 environment running self-managed Kubernetes environment to provide more complete knowledge on how to implement and use:
 
 - Access controls
 - DNS policy
@@ -26,17 +25,17 @@ During this workshop, we expect attendees to have hands-on experience with Kuber
 
 ## Intended audience
 
-This workshop addresses the needs of DevOps, site reliability engineers (SREs), security and cloud architects by implementing Kubernetes-native networking, security and observability in AWS or EKS environments.
+This workshop addresses the needs of DevOps, site reliability engineers (SREs), security and cloud architects by implementing Kubernetes-native networking, security and observability for your workloads on Amazon EKS. 
 
 This workshop is intended to be **200-300** level. It is assumed that you are familiar with the following concepts:
 
 - Kubernetes constructs at a base level
 - Basic networking in Kubernetes
-- Use of CNIs with AWS and EKS
+- Base understanding of how CNI's work in Kubernetes
 - Kubernetes-native security policies and monitoring
 - Kubernetes-native observability and troubleshooting
 
-## Workshop flow
+## Workshop Breakdown 
 
 The workshop modules are structured to provide a natural flow helping to configure and solve various security, observability and troubleshooting use cases for your Kubernetes applications and services.
 

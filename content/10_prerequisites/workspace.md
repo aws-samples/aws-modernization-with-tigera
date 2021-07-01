@@ -35,8 +35,8 @@ Make sure you are naming your Cloud9 environment `tigera-workshop`, otherwise th
 
     |    Environment Setting   |   Value    |
     |----------|--------------------|
-    | Envrionment Type | Ubuntu Server 18.04 LTS |
-    | Instance Type | t3.large |
+    | Envrionment Type | (Leave as default) |
+    | Instance Type | t2.micro |
     | Platform | (Leave as default)|
     | Cost-Saving settings | (Leave as default)|
     | IAM Role | (Leave as default) |
