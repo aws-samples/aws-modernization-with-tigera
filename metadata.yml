@@ -13,7 +13,7 @@ services:
    - Cloud9
    - EKS
 #level - Approximate skill level needed for this workshop
-level: 200 
+level: 300 
 #duration - Estimated duration in minutes
 duration: 120 
 #cost - Cost in USD. If the content is offered without cost, enter 0

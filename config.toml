@@ -58,7 +58,7 @@ home = [ "HTML", "RSS", "JSON"]
     simple = true
 [[menu.shortcuts]] 
  
-name = "<h5></h5> MORE"
+name = ""
 url = "https://awsworkshop.io"
 weight = 9
     [[menu.shortcuts]] 
