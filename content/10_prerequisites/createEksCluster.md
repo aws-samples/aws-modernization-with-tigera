@@ -19,7 +19,7 @@ For the instructor-led workshop you will get a pre-provisioned EKS cluster and c
     ```bash
     export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
     export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))
-    EKS_VERSION="1.19"
+    EKS_VERSION="1.20"
     IAM_ROLE='tigera-workshop-admin'
     
     # check if AWS_REGION is configured
@@ -40,7 +40,7 @@ For the instructor-led workshop you will get a pre-provisioned EKS cluster and c
 2. *[Optional]* Create AWS key pair.
 
     >Follow this step only if want to access EKS nodes via SSH and want to use your own SSH key. Otherwise, skip this step.  
-    >If you do configure your AWS key pair, make sure to uncomment `publicKeyName` parameter in the cluster configuration manifest at the next step.
+    >If you do configure your AWS key pair, make sure to uncomment the lines in the cluster configuration manifest at the next step under `ssh` section.
 
     In order to test host port protection with Calico network policy we will create EKS nodes with SSH access. For that we need to create EC2 key pair.
 
@@ -57,6 +57,8 @@ For the instructor-led workshop you will get a pre-provisioned EKS cluster and c
     ```
 
 3. Create EKS manifest.
+
+    >If you want to use SSH key created in the previous step, uncomment the lines under the `ssh` section.
 
     ```bash
     # create EKS manifest file
@@ -81,9 +83,9 @@ For the instructor-led workshop you will get a pre-provisioned EKS cluster and c
       instanceType: "t3.large"
       ssh:
         enableSsm: true
-        # uncomment lines below to allow SSH access to the nodes using existing EC2 key pair
+        # uncomment the lines below to allow SSH access to the nodes using existing EC2 key pair
         # publicKeyName: ${KEYPAIR_NAME}
-        allow: true
+        # allow: true
 
     # enable all of the control plane logs:
     cloudWatch:
