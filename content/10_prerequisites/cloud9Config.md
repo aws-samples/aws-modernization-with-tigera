@@ -19,13 +19,13 @@ the some AWS services authentication, so we will disable it and rely on the IAM 
 
 Let's run the command below, the following actions will take place as we do that: 
 
-- Ensure temporary credentials aren’t already in place.
+- Ensure temporary credentials aren’t already in place
 
-- Remove any existing credentials file.
+- Remove any existing credentials file
 
-- Set the region to work with our desired region.
+- Set the region to work with our desired region
 
-- Validate that our IAM role is valid. 
+- Validate that our IAM role is valid
 
 ```sh
   rm -vf ${HOME}/.aws/credentials
