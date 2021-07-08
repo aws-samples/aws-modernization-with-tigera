@@ -8,8 +8,6 @@ weight = 6
 
 In this workshop we are going to focus on these main use cases:
 
-In this workshop we are going to focus on these main use cases:
-
 - **East-West security**, leveraging zero-trust security approach to implement safeguards within Kubernetes environment against malware and other malicious activities
 - **Egress access controls**, using DNS policy to access external resources by their fully qualified domain names (FQDN) to prevent unauthorized access to the application
 - **Host micro-segmentation**, leveraging Calico policies to protect host ports and host based services for a multi-tenant environment
