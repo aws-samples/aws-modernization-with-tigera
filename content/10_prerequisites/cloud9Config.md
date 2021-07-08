@@ -28,20 +28,10 @@ Let's run the command below, the following actions will take place as we do that
 - Validate that our IAM role is valid. 
 
 ```sh
-rm -vf ${HOME}/.aws/credentials
-export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
-export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
-test -n "$AWS_REGION" && echo AWS_REGION is "$AWS_REGION" || echo AWS_REGION is not set
-echo "export ACCOUNT_ID=${ACCOUNT_ID}" | tee -a ~/.bash_profile
-echo "export AWS_REGION=${AWS_REGION}" | 
-tee -a ~/.bash_profile
-aws configure set default.region ${AWS_REGION}
-aws configure get default.region
-aws sts get-caller-identity --query Arn | grep tigera-workshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
+  rm -vf ${HOME}/.aws/credentials
+  export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
+  export AWS_DEFAULT_REGION=us-east-1
 ```
-
-If the IAM role is not valid, <span style="color: red;">**DO NOT PROCEED**</span>. Go back and confirm the steps on this page. 
-    >For convenience consider configuring [autocompletion for kubectl](https://kubernetes.io/docs/tasks/tools/included/optional-kubectl-configs-bash-linux/#enable-kubectl-autocompletion).
 
 1. Download this repo into your environment:
 
