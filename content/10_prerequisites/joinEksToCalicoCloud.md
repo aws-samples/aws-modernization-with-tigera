@@ -16,10 +16,12 @@ For the instructor-led workshop you will be provided with the Calico Cloud trial
 
 1. Join EKS cluster to Calico Cloud management plane.
 
-    Use Calico Cloud install script provided in the welcome email for Calico Cloud trial account.
+    ![join EKS cluster](../images/join-eks-cluster.png)
+
+    Use Calico Cloud install script provided in the `Connect Cluster` wizard.
 
     ```bash
-    # script should look similar to this
+    # script would look similar to this
     curl https://installer.calicocloud.io/xxxxxx_yyyyyyy-saay-management_install.sh | bash
     ```
 
