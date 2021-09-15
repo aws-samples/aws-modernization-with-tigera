@@ -15,13 +15,19 @@ for the download links.](https://docs.aws.amazon.com/eks/latest/userguide/gettin
 
 #### Install kubectl
 
+{{% notice tip %}}
+If needed, you can download the latest version of **kubectl** from [install-kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) resource.
+{{% /notice %}}
+
 ```bash
 sudo curl --silent --location -o /usr/local/bin/kubectl \
-   https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.11/2020-09-18/bin/linux/amd64/kubectl
+   https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
 
 sudo chmod +x /usr/local/bin/kubectl
 ```
+
 #### Install eksctl
+
 ```bash
 sudo curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
@@ -52,7 +58,7 @@ aws-cli/2.2.15 Python/3.8.8 Linux/4.14.232-177.418.amzn2.x86_64 exe/x86_64.amzn.
 #### Install jq, envsubst (from GNU gettext utilities) and bash-completion
 
 ```bash
-sudo yum -y install jq gettext bash-completion moreutils
+sudo yum -y install jq gettext bash-completion moreutils nc
 ```
 
 #### Install yq for yaml processing
@@ -66,7 +72,7 @@ echo 'yq() {
 #### Verify the binaries are in the path and executable
 
 ```bash
-for command in kubectl jq envsubst aws
+for command in kubectl eksctl jq aws nc git
   do
     which $command &>/dev/null && echo "$command in path" || echo "$command NOT FOUND"
   done
@@ -80,5 +86,12 @@ kubectl completion bash >>  ~/.bash_completion
 . ~/.bash_completion
 ```
 
+#### Set alias for kubectl
+
+```bash
+echo 'alias k=kubectl' >>~/.bashrc
+echo 'complete -F __start_kubectl k' >>~/.bashrc
+. ~/.bashrc
+```
 
 

@@ -78,5 +78,6 @@ Refer to [packet capture](https://docs.tigera.io/visibility/packetcapture) docum
 
     ls dev-nginx*
     # view *.pcap content
-    tcpdump -Xr dev-nginx-XXXXXX.pcap
+    tcpdump -Ar $(ls dev-* | head -1)
+    tcpdump -Xr $(ls dev-* | head -1)
     ```

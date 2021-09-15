@@ -34,7 +34,7 @@ Please select **US East (N.Virginia)** in the top right corner.
 ![Event Engine Region](/images/event-engine-region.png)
 
 {{% notice warning %}}
-This account will expire at the end of the workshop and the all the resources created will be automatically deprovision-ed. You will not be able to access this account after today.
+This account will expire at the end of the workshop and the all the resources created will be automatically deprovisioned. You will not be able to access this account after today.
 {{% /notice %}}
 
 

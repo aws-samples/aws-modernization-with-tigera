@@ -6,8 +6,8 @@ weight: 23
 
 ## Create EKS cluster
 
-{{% notice info %}}
-For the instructor-led workshop you will get a pre-provisioned EKS cluster and can advance to the next step [Join EKS cluster to Calico Cloud](./joinekstocalicocloud.html)
+{{% notice warning %}}
+For the instructor-led workshop at an AWS hosted event (such as *re:Invent, Kubecon, Immersion Day, Dev Day, etc*) you will get a pre-provisioned EKS cluster and can advance to the next step, [Join EKS cluster to Calico Cloud](./joinekstocalicocloud.html)
 {{% /notice %}}
 
 >This workshop uses EKS cluster with most of the default configuration settings. To create an EKS cluster and tune the default settings, consider exploring [EKS Workshop](https://www.eksworkshop.com) materials.
@@ -82,7 +82,6 @@ For the instructor-led workshop you will get a pre-provisioned EKS cluster and c
       # see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI
       instanceType: "t3.large"
       ssh:
-        enableSsm: true
         # uncomment the lines below to allow SSH access to the nodes using existing EC2 key pair
         # publicKeyName: ${KEYPAIR_NAME}
         # allow: true

@@ -7,7 +7,7 @@ weight: 11
 ### Running the workshop on your own
 
 {{% notice warning %}}
-Only complete this section if you are running the workshop on your own. If you are at an AWS hosted event (such as re:Invent, Kubecon, Immersion Day, etc), go to [Start the workshop at an AWS event](../10_prerequisites/aws_event.html).
+Only complete this section if you are running the workshop on your own. If you are at an AWS hosted event (such as *re:Invent, Kubecon, Immersion Day, Dev Day, etc*), go to [Start the workshop at an AWS event](../10_prerequisites/aws_event.html).
 {{% /notice %}}
 
 {{% children %}}
