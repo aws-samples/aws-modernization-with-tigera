@@ -68,9 +68,72 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     kubectl apply -f demo/50-alerts/unsanctioned.lateral.access.yaml
     ```
 
+6. *[Bonus task]* Configure *frontend* service for L7 log data collection
+
+    {{% notice warning %}}
+This module is applicable to Calico Cloud or Calico Enterprise version v3.9+. If your Calico version is lower than v3.9.0, then skip this task. You can verify Calico version, by running command:
+`kubectl get clusterinformation default -ojsonpath='{.spec.cnxVersion}'`
+    {{% /notice %}}
+
+    {{% notice info %}}
+L7 collector is based on the Envoy proxy and deployed as a DaemonSet resource. For more details, see [Configure L7 logs](https://docs.tigera.io/v3.9/visibility/elastic/l7/configure#step-2-enable-l7-log-collection) documentation article.
+    {{% /notice %}}
+
+    a. Deploy Envoy proxy daemonset configuration.
+
+    ```bash
+    # download Envoy config
+    curl https://docs.tigera.io/manifests/l7/daemonset/envoy-config.yaml -O
+    # deploy Envoy config
+    kubectl create configmap envoy-config -n calico-system --from-file=envoy-config.yaml
+    ```
+
+    b. Deploy L7 collector component.
+
+    ```bash
+    # deploy L7 collector
+    kubectl apply -f https://docs.tigera.io/manifests/l7/daemonset/l7-collector-daemonset.yaml
+    # enable L7 log collection daemonset mode in Felix
+    kubectl patch felixconfiguration default --type='merge' -p '{"spec":{"tproxyMode":"Enabled"}}'
+    ```
+
+    c. Enable L7 logs for the application service.
+
+    {{% notice tip %}}
+To opt a service into L7 log collection, you need to annotate the service with `projectcalico.org/l7-logging=true` annotation.
+    {{% /notice %}}
+
+    ```bash
+    # enable L7 logs for a few services of boutiqueshop app
+    kubectl annotate svc frontend projectcalico.org/l7-logging=true
+    kubectl annotate svc checkoutservice projectcalico.org/l7-logging=true
+    ```
+
 ## Segment connections within Kubernetes cluster
 
-1. Test connectivity between application components and across application stacks.
+1. Add **curl** to **loadgenerator** component to run test commands.
+
+    >This step is only needed if you're using **boutiqueshop** app version in which the **loadgenerator** component doesn't include **curl** or **wget** utility. Note, that package addition to a running pod will be removed as soon as the pod is restarted. You may need to add it back if **loadgenerator** pod restarts, and you still need to run **curl** commands to test use cases.
+
+    Update **loadgenerator** packages.
+
+    ```bash
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'apt-get update'
+    ```
+
+    Install **curl** utility.
+
+    ```bash
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'apt-get install -y curl'
+    ```
+
+    Check **curl** binary.
+
+    ```bash
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl --help'
+    ```
+
+2. Test connectivity between application components and across application stacks.
 
     a. Test connectivity between workloads within each namespace.
 
@@ -80,8 +143,6 @@ We will work with resources located in the `tigera-eks-workshop` repository that
 
     # test connectivity within default namespace
     kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI frontend 2>/dev/null | grep -i http'
-
-    kubectl exec -it $(kubectl get po -l app=frontend -ojsonpath='{.items[0].metadata.name}') -c server -- sh -c 'nc -zv productcatalogservice 3550'
     ```
 
     b. Test connectivity across namespaces.
@@ -106,7 +167,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
 
     All of these tests should succeed if there are no policies in place to govern the traffic for `dev` and `default` namespaces.
 
-2. Apply staged `default-deny` policy.
+3. Apply staged `default-deny` policy.
 
     >Staged `default-deny` policy is a good way of catching any traffic that is not explicitly allowed by a policy without explicitly blocking it.
 
@@ -125,7 +186,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
 
     ![packets by policy histogram](../images/packets-by-policy.png)
 
-3. Apply network policies to control East-West traffic.
+4. Apply network policies to control East-West traffic.
 
     ```bash
     # deploy dev policies
@@ -145,7 +206,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     kubectl delete -f demo/10-security-controls/staged.default-deny.yaml
     ```
 
-4. Test connectivity with policies in place.
+5. Test connectivity with policies in place.
 
     a. The only connections between the components within each namespaces should be allowed as configured by the policies.
 
@@ -177,7 +238,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI www.google.com 2>/dev/null | grep -i http'
     ```
 
-5. Protect workloads from known bad actors.
+6. Protect workloads from known bad actors.
 
     Calico offers `GlobalThreatfeed` resource to prevent known bad actors from accessing Kubernetes pods.
 
@@ -264,6 +325,10 @@ We will work with resources located in the `tigera-eks-workshop` repository that
 
 ## Secure Kubernetes host ports
 
+{{% notice warning %}}
+This use case requires EKS hosts to have **public IPs** and a security group configured to allow access to port **30080**. A cluster provisioned for an AWS hosted event is unlikely to be configured to allow direct node access over a public IP. In such case, you can review and skip this use case or try it out in your own EKS cluster.
+{{% /notice %}}
+
 {{% notice tip %}}
 Calico network policies not only can secure pod to pod communications but also can be applied to EKS hosts to protect host based services and ports. For more details refer to [Protect Kubernetes nodes](https://docs.tigera.io/security/kubernetes-nodes) documentation.
 {{% /notice %}}
@@ -277,7 +342,7 @@ Calico network policies not only can secure pod to pod communications but also c
     kubectl expose deployment frontend --type=NodePort --name=frontend-nodeport --overrides='{"apiVersion":"v1","spec":{"ports":[{"nodePort":30080,"port":80,"targetPort":8080}]}}'
 
     # open access to the port in AWS security group
-    CLUSTER_NAME='tigera-workshop' # adjust the name if you used a different name for your EKS cluster
+    CLUSTER_NAME='tigera-workshop' # use 'basic-eks' for AWS hosted event
     AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
     # pick one EKS node and use it's ID to get securigy group
     SG_ID=$(aws ec2 describe-instances --region $AWS_REGION --filters "Name=tag:Name,Values=$CLUSTER_NAME*" "Name=instance-state-name,Values=running" --query 'Reservations[0].Instances[*].NetworkInterfaces[0].Groups[0].GroupId' --output text --output text)
