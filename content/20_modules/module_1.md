@@ -326,7 +326,8 @@ To opt a service into L7 log collection, you need to annotate the service with `
 ## Secure Kubernetes host ports
 
 {{% notice warning %}}
-This use case requires EKS hosts to have **public IPs** and a security group configured to allow access to port **30080**. A cluster provisioned for an AWS hosted event is unlikely to be configured to allow direct node access over a public IP. In such case, you can review and skip this use case or try it out in your own EKS cluster.
+This use case requires EKS hosts to have **public IPs** and a security group configured to allow access to port **30080**. A cluster provisioned for an AWS hosted event is unlikely to be configured to allow direct node access over a public IP. In such case, you can review and skip this use case or try it out in your own EKS cluster.  
+Alternatively, you can configure EKS cluster security group to allow access from Cloud9 instance over port 30080, and then proceed with this use case.
 {{% /notice %}}
 
 {{% notice tip %}}
@@ -350,9 +351,11 @@ Calico network policies not only can secure pod to pod communications but also c
     aws ec2 authorize-security-group-ingress --region $AWS_REGION --group-id $SG_ID --protocol tcp --port 30080 --cidr 0.0.0.0/0
 
     # get public IP of an EKS node
-    PUB_IP=$(aws ec2 describe-instances --region $AWS_REGION --filters "Name=tag:Name,Values=$CLUSTER_NAME*" "Name=instance-state-name,Values=running" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text --output text)
+    EKS_NODE_PUB_IP=$(aws ec2 describe-instances --region $AWS_REGION --filters "Name=tag:Name,Values=$CLUSTER_NAME*" "Name=instance-state-name,Values=running" --query 'Reservations[0].Instances[0].PublicIpAddress' --output text --output text)
+    # print for easy copy/paste
+    echo "EKS_NODE_PUB_IP=$EKS_NODE_PUB_IP"
     # test connection to SSH port
-    nc -zv $PUB_IP 30080
+    nc -zv $EKS_NODE_PUB_IP 30080
     ```
 
     >It can take a moment for the node port to become accessible.
@@ -397,6 +400,10 @@ Calico network policies not only can secure pod to pod communications but also c
     >Note that in order to control access to the NodePort service, you need to enable `preDNAT` and `applyOnForward` policy settings.
 
 4. *[Bonus task]* Implement a Calico policy to control access to the SSH port on EKS hosts.
+
+    {{% notice warning %}}
+This task requires access to EKS hosts over SSH port (22). Skip this task if your cluster configuration does not allow access to SSH port on the EKS hosts.
+    {{% /notice %}}
 
     When dealing with SSH and platform required ports, Calico provides a failsafe mechanism to manage such ports so that you don't lock yourself out of the node by accident. Once you configure and test host targeting policy, you can selectively disable [failsafe](https://docs.tigera.io/v3.7/security/protect-hosts#failsafe-rules) ports.
 
