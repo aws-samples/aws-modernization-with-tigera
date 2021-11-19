@@ -1,17 +1,13 @@
-RelativeURLs=true
-CanonifyURLs=true
+baseURL = "/"
 languageCode = "en-US"
-defaultContentLanguage = "en"
+defaultContentLanguage = "oyo"
 
-title = "AWS Modernization with Tigera"
+title = "Tigera Modernization Workshop"
 theme = "hugo-theme-learn"
 metaDataFormat = "yaml"
-defaultContentLanguageInSubdir= true
-
-uglyurls = true
-sectionPagesMenu = "main"
-pygmentsCodeFences = true
-pygmentsStyle = "monokai"
+defaultContentLanguageInSubdir= "false"
+uglyurls = "true"
+enableEmoji = true
 
 [params]
   # Prefix URL to edit current page. Will display an "Edit this page" button on top right hand corner of every page. 
@@ -19,13 +15,11 @@ pygmentsStyle = "monokai"
   # See the config.toml file from this documentation site to have an example.
   #editURL = ""
   # Author of the site, will be used in meta information
-  author = "Young Jeong"
+  author = "Andrew Park, Young Jeong, Ivan Shamrock"
   # Description of the site, will be used in meta information
-  description = "AWS Modernization Workshop with Tigera"
+  description = "Calico Cloud on AWS Modernization Workshop"
   # Shows a checkmark for visited pages on the menu
   showVisitedLinks = true
-  # Disable Home button.
-  disableLandingPageButton = true
   # Disable search function. It will hide search bar
   disableSearch = false
   # Javascript and CSS cache are automatically busted when new version of site is generated. 
@@ -36,7 +30,7 @@ pygmentsStyle = "monokai"
   # A title for shortcuts in menu is set by default. Set this to true to disable it. 
   disableShortcutsTitle = false
   # When using mulitlingual website, disable the switch language button.
-  disableLanguageSwitchingButton = true
+  disableLanguageSwitchingButton = false
   # Hide breadcrumbs in the header and only show the current page title
   disableBreadcrumb = false
   # Hide Next and Previous page buttons normally displayed full height beside content
@@ -46,23 +40,11 @@ pygmentsStyle = "monokai"
   # Change default color scheme with a variant one. Can be "red", "blue", "green".
   themeVariant = "mine"
 
-[outputs]
-home = [ "HTML", "RSS", "JSON"]
 
-[privacy.youtube]
-    disable = false
-    privacyEnhanced = true
-[privacy.twitter]
-    disable = false
-    enableDNT = true
-    simple = true
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
 [[menu.shortcuts]] 
- 
-name = ""
-url = "https://awsworkshop.io"
-weight = 9
-    [[menu.shortcuts]] 
- 
 name = "<i class='fas fa-graduation-cap'></i> Modernization Workshops"
 url = "https://awsworkshop.io"
 weight = 10
@@ -93,8 +75,17 @@ url = "https://www.appmeshworkshop.com/"
 weight = 23
 
 [markup]
-  defaultMarkdownHandler = "goldmark"
-  [markup.goldmark]
-    [markup.goldmark.renderer]
-      unsafe = true
+  defaultMarkdownHandler = "blackfriday"
+  [markup.blackFriday]
+    hrefTargetBlank = true
 
+[Languages]
+  [Languages.ee]
+    title = "Event Engine"
+    weight = 2
+    languageName = "Event Engine"
+
+  [Languages.oyo]
+    title = "MP DevOps Series"
+    weight = 1
+    languageName = "MP DevOps Series"
