@@ -57,8 +57,6 @@ Use global alerts to notify security and operations teams about unsanctioned or 
 
 Generate Compliance reports for regulatory requirements and policy violations.
 
-test
-
 {{% notice tip %}}
 To learn more about installing Calico on EKS Cluster, please click [here](https://docs.aws.amazon.com/eks/latest/userguide/calico.html).
 {{% /notice %}}
