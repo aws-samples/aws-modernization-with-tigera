@@ -11,9 +11,8 @@ weight: 12
 We will use Amazon Cloud9 to access our AWS accounts via the AWS CLI in this Workshop.  There are a few steps to complete to set this up
 
 1. Create a new Cloud9 IDE environment
-2. Create the IAM role for your workspace
-3. Attach the IAM role to your workspace
-4. Configure workshop specific requirements
+1. Attach the IAM role to your workspace
+1. Configure workshop specific requirements
 
 
 ## Create a new Cloud9 IDE environment
@@ -30,7 +29,7 @@ We will use Amazon Cloud9 to access our AWS accounts via the AWS CLI in this Wor
 
 1. Leave all the other settings as default and click **Next step** followed by **Create environment**
 
-![Cloud9](/images/c9-create.png)
+<img src=/images/c9-create.png>
 
 {{% notice info %}}
 This will take about 1-2 minutes to provision

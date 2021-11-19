@@ -86,4 +86,4 @@ the EKS IAM authentication, so we will disable it and rely on the IAM role inste
    If the pods cannot be listed, <span style="color: red;">**DO NOT PROCEED**</span>. Please reach out to AWS Event Staff or confirm the last few steps. 
    {{% /notice %}}
 
-If you have completed the above instructions, move onto the Calico Cloud Setup section!
+If you have completed the above instructions, move onto the Tigera Setup section!

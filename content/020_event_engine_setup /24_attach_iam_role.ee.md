@@ -19,3 +19,6 @@ Since an EKS Cluster has already been pre-provisioned with all the IAM roles cre
     ![Bastion Instance Profile role](/images/tigera-modify-iam.png)
 
 4. Click **Save**
+
+
+
