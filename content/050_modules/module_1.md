@@ -71,19 +71,19 @@ We will work with resources located in the `tigera-eks-workshop` repository that
 6. *[Bonus task]* Configure *frontend* service for L7 log data collection
 
     {{% notice warning %}}
-This module is applicable to Calico Cloud or Calico Enterprise version v3.9+. If your Calico version is lower than v3.9.0, then skip this task. You can verify Calico version, by running command:
+This module is applicable to Calico Cloud or Calico Enterprise version v3.10+. If your Calico version is lower than v3.10.0, then skip this task. You can verify Calico version, by running command:
 `kubectl get clusterinformation default -ojsonpath='{.spec.cnxVersion}'`
     {{% /notice %}}
 
     {{% notice info %}}
-L7 collector is based on the Envoy proxy and deployed as a DaemonSet resource. For more details, see [Configure L7 logs](https://docs.tigera.io/v3.9/visibility/elastic/l7/configure#step-2-enable-l7-log-collection) documentation article.
+L7 collector is based on the Envoy proxy and deployed as a DaemonSet resource. For more details, see [Configure L7 logs](https://docs.tigera.io/v3.10/visibility/elastic/l7/configure#step-2-enable-l7-log-collection) documentation article.
     {{% /notice %}}
 
     a. Deploy Envoy proxy daemonset configuration.
 
     ```bash
     # download Envoy config
-    curl https://docs.tigera.io/manifests/l7/daemonset/envoy-config.yaml -O
+    curl https://docs.tigera.io/v3.10/manifests/l7/daemonset/envoy-config.yaml -O
     # deploy Envoy config
     kubectl create configmap envoy-config -n calico-system --from-file=envoy-config.yaml
     ```
@@ -92,7 +92,7 @@ L7 collector is based on the Envoy proxy and deployed as a DaemonSet resource. F
 
     ```bash
     # deploy L7 collector
-    kubectl apply -f https://docs.tigera.io/manifests/l7/daemonset/l7-collector-daemonset.yaml
+    kubectl apply -f https://docs.tigera.io/v3.10/manifests/l7/daemonset/l7-collector-daemonset.yaml
     # enable L7 log collection daemonset mode in Felix
     kubectl patch felixconfiguration default --type='merge' -p '{"spec":{"tproxyMode":"Enabled"}}'
     ```

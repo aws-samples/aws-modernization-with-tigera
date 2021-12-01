@@ -53,12 +53,13 @@ Make sure to get your [Calico Cloud trial account](https://www.calicocloud.io) b
 
     >Note the management plane URL and any credentials that you see in the output as we will use them in the following modules.
 
-2. Configure log aggregation and flush intervals.
+2. Configure log aggregation and flush intervals. Also, configure pod level TCP stats collection.
 
     ```bash
     kubectl patch felixconfiguration.p default -p '{"spec":{"flowLogsFlushInterval":"10s"}}'
     kubectl patch felixconfiguration.p default -p '{"spec":{"dnsLogsFlushInterval":"10s"}}'
     kubectl patch felixconfiguration.p default -p '{"spec":{"flowLogsFileAggregationKindForAllowed":1}}'
+    kubectl patch felixconfiguration.p default -p '{"spec":{"flowLogsCollectTcpStats":true}}'
     ```
 
 3. Enable Felix component Policy Sync API.
