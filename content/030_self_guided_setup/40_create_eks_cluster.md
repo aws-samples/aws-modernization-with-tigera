@@ -17,31 +17,31 @@ If you want to use SSH key created in the previous step, uncomment the lines und
 cat > configs/tigera-workshop.yaml << EOF
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
-  metadata:
-    name: "tigera-workshop"
-    region: "${AWS_REGION}"
-    version: "${EKS_VERSION}"
+metadata:
+  name: "tigera-workshop"
+  region: "${AWS_REGION}"
+  version: "${EKS_VERSION}"
 
-  availabilityZones: ["${AZS[0]}", "${AZS[1]}", "${AZS[2]}"]
-  
-  managedNodeGroups:
-  - name: "nix-t3-large"
-    desiredCapacity: 3
-    # choose proper size for worker node instance as the node size detemines the number of pods that a node can run
-    # it's limited by a max number of interfeces and private IPs per interface
-    # t3.large has max 3 interfaces and allows up to 12 IPs per interface, therefore can run up to 36 pods per node
-    # see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI
-    instanceType: "t3.large"
-    ssh:
-      # uncomment the lines below to allow SSH access to the nodes using existing EC2 key pair
-      # publicKeyName: ${KEYPAIR_NAME}
-      # allow: true
+availabilityZones: ["${AZS[0]}", "${AZS[1]}", "${AZS[2]}"]
 
-  # enable all of the control plane logs:
-  cloudWatch:
-    clusterLogging:
-      enableTypes: ["*"]
-  EOF
+managedNodeGroups:
+- name: "nix-t3-large"
+  desiredCapacity: 3
+  # choose proper size for worker node instance as the node size detemines the number of pods that a node can run
+  # it's limited by a max number of interfeces and private IPs per interface
+  # t3.large has max 3 interfaces and allows up to 12 IPs per interface, therefore can run up to 36 pods per node
+  # see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI
+  instanceType: "t3.large"
+  ssh:
+    # uncomment the lines below to allow SSH access to the nodes using existing EC2 key pair
+    # publicKeyName: ${KEYPAIR_NAME}
+    # allow: true
+
+# enable all of the control plane logs:
+cloudWatch:
+  clusterLogging:
+    enableTypes: ["*"]
+EOF
 ```
 
 1. Use `eksctl` to create EKS cluster.
