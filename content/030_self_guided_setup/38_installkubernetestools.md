@@ -1,8 +1,9 @@
 ---
-title: "7. Install Kubernetes Tools"
-chapter: false
-weight: 15
+title: "6. Install Kubernetes Tools"
+chapter: true
+weight: 16
 ---
+## Install Kubernetes Tools
 
 Amazon EKS clusters require kubectl and kubelet binaries and the aws-cli or aws-iam-authenticator
 binary to allow IAM authentication for your Kubernetes cluster.
