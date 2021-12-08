@@ -30,19 +30,19 @@ In this section, we will be installing a few tools to help in running through th
     aws configure get default.region
 
    # Validate that our IAM role is valid.
-    aws sts get-caller-identity --query Arn | grep partnerName-workshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
+    aws sts get-caller-identity --query Arn | grep tigera-workshop-admin -q && echo "IAM role valid" || echo "IAM role NOT valid"
       ```
 
    {{% notice warning %}}
    If the IAM role is not valid, <span style="color: red;">**DO NOT PROCEED**</span>. Go back and confirm the steps on this page.
    {{% /notice %}}
 
-   If you are done, please proceed to the **Install Kubernetes Tools** section!
+   If you are done, please proceed to the **next** section!
 
 2. *[Optional]* Create AWS key pair.
 
-    >Follow this step only if want to access EKS nodes via SSH and want to use your own SSH key. Otherwise, skip this step.  
-    >If you do configure your AWS key pair, make sure to uncomment the lines in the cluster configuration manifest at the next step under `ssh` section.
+    >Follow this step only if you want to access EKS nodes via SSH and want to use your own SSH key. Otherwise, skip this step.  
+    >If you do configure your AWS key pair, make sure to uncomment the lines in the cluster configuration manifest YAML in the next section at the `ssh` stanza.
 
     In order to test host port protection with Calico network policy we will create EKS nodes with SSH access. For that we need to create EC2 key pair.
 
@@ -57,4 +57,3 @@ In this section, we will be installing a few tools to help in running through th
     # load SSH key
     ssh-add $KEYPAIR_NAME.pem
     ```
-
