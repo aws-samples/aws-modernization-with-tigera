@@ -39,7 +39,16 @@ In this section, we will be installing a few tools to help in running through th
 
    If you are done, please proceed to the **next** section!
 
-2. *[Optional]* Create AWS key pair.
+2. Clone `tigera-solutions/tigera-eks-workshop` Github repo
+
+    You will use [tigera-solutions/tigera-eks-workshop](https://github.com/tigera-solutions/tigera-eks-workshop) repo to implement use cases for this workshop. Clone the repo and `cd` into it.
+
+    ```bash
+    git clone https://github.com/tigera-solutions/tigera-eks-workshop
+    cd tigera-eks-workshop
+    ```
+
+3. *[Optional]* Create AWS key pair.
 
     >Follow this step only if you want to access EKS nodes via SSH and want to use your own SSH key. Otherwise, skip this step.  
     >If you do configure your AWS key pair, make sure to uncomment the lines in the cluster configuration manifest YAML in the next section at the `ssh` stanza.
