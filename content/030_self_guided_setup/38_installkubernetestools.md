@@ -1,5 +1,5 @@
 ---
-title: "7. Install Kubernetes Tools"
+title: "6. Install Kubernetes Tools"
 chapter: false
 weight: 15
 ---
