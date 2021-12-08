@@ -1,8 +1,9 @@
 ---
 title: "5. Attach the IAM role to your Workspace"
-chapter: false
-weight: 14
+chapter: true
+weight: 15
 ---
+## Attach the IAM role to your Workspace
 
 {{% notice info %}}
 If you are running this at an AWS hosted event (such as *re:Invent, Kubecon, Immersion Day, Dev Day, etc*), the IAM role has been created for you so the IAM role you are attaching in this step will be different, e.g. __mod-*****__, than if you were to create your own IAM role, e.g. `tigera-workshop-admin`.

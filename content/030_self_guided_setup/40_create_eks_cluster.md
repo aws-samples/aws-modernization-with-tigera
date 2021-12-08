@@ -4,11 +4,11 @@ chapter: true
 weight: 20
 ---
 
-# Create EKS Cluster
+## Create EKS Cluster
 
 In this section, we will be creating our EKS manifest file and deploying our cluster with eksctl. 
 
-## Create EKS manifest.
+### Create EKS manifest
 
 If you want to use SSH key created in the previous step, uncomment the lines under the `ssh` section.
 
@@ -44,13 +44,13 @@ kind: ClusterConfig
   EOF
 ```
 
-7. Use `eksctl` to create EKS cluster.
+1. Use `eksctl` to create EKS cluster.
 
     ```bash
     eksctl create cluster -f configs/tigera-workshop.yaml
     ```
 
-8. View EKS cluster.
+2. View EKS cluster.
 
     Once cluster is created you can list it using `eksctl`.
 
@@ -58,7 +58,7 @@ kind: ClusterConfig
     eksctl get cluster tigera-workshop
     ```
 
-9. Test access to EKS cluster with `kubectl`
+3. Test access to EKS cluster with `kubectl`
 
     Once the EKS cluster is provisioned with `eksctl` tool, the `kubeconfig` file would be placed into `~/.kube/config` path. The `kubectl` CLI looks for `kubeconfig` at `~/.kube/config` path or into `KUBECONFIG` env var.
 

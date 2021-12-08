@@ -1,7 +1,7 @@
 ---
 title: "7. Configure workshop specific requirements"
 chapter: true
-weight: 16
+weight: 17
 ---
 
 ## Configure Workspace

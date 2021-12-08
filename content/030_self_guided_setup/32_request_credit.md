@@ -1,8 +1,9 @@
 ---
-title: "2. AWS Credit Request"
-chapter: false
+title: "3. AWS Credit Request"
+chapter: true
 weight: 12
 ---
+## AWS Credit Request
 
 <table class="credit" style="width:100%">
 <tr class="credit">
