@@ -29,7 +29,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
 
     This will add tiers `security` and `platform` to the Calico cluster.
 
-    ![policy board tiers](../images/policy-board-tiers.png)
+    ![policy board tiers](/images/policy-board-tiers.png)
 
 2. Deploy base policy.
 
@@ -174,7 +174,7 @@ To opt a service into L7 log collection, you need to annotate the service with `
 
     >The staged policy does not affect the traffic directly but allows you to view the policy impact if it were to be enforced.
 
-    ![packets by policy histogram](../images/packets-by-policy.png)
+    ![packets by policy histogram](/images/packets-by-policy.png)
 
 4. Apply network policies to control East-West traffic.
 

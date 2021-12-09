@@ -29,7 +29,7 @@ Generate Compliance reports for regulatory requirements and policy violations.
 
     Compliance reports organize data in a CSV format which can be downloaded and moved to a long term data storage to meet compliance requirements.
 
-    ![compliance report](../images/compliance-report.png)
+    ![compliance report](/images/compliance-report.png)
 
 2. *[Optional]* Manually kick off report generation task.
 
