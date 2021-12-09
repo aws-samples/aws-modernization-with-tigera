@@ -46,7 +46,9 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     kubectl apply -f demo/dev/app.manifests.yaml
 
     # deploy boutiqueshop app stack
-    kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/master/release/kubernetes-manifests.yaml
+    kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/release/v0.2.4/release/kubernetes-manifests.yaml
+    # set platform env var to "aws"
+    kubectl set env deploy frontend ENV_PLATFORM="aws"
     ```
 
 4. Deploy compliance reports.
@@ -115,22 +117,10 @@ To opt a service into L7 log collection, you need to annotate the service with `
 
     >This step is only needed if you're using **boutiqueshop** app version in which the **loadgenerator** component doesn't include **curl** or **wget** utility. Note, that package addition to a running pod will be removed as soon as the pod is restarted. You may need to add it back if **loadgenerator** pod restarts, and you still need to run **curl** commands to test use cases.
 
-    Update **loadgenerator** packages.
+    Install **curl** packages onto **loadgenerator** pod.
 
     ```bash
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'apt-get update'
-    ```
-
-    Install **curl** utility.
-
-    ```bash
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'apt-get install -y curl'
-    ```
-
-    Check **curl** binary.
-
-    ```bash
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl --help'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'apt-get update && apt-get install -y curl && curl --help'
     ```
 
 2. Test connectivity between application components and across application stacks.

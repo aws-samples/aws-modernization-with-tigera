@@ -59,8 +59,9 @@ Refer to [packet capture](https://docs.tigera.io/visibility/packetcapture) docum
     The easiest way to retrieve captured `*.pcap` files is to use [calicoctl](https://docs.tigera.io/maintenance/clis/calicoctl/) CLI.
 
     ```bash
+    CALICO_VERSION=$(kubectl get clusterinformation default -ojsonpath='{.spec.cnxVersion}')
     # download and configure calicoctl
-    curl -o calicoctl -O -L https://docs.tigera.io/download/binaries/v3.7.0/calicoctl
+    curl -o calicoctl -O -L https://docs.tigera.io/download/binaries/${CALICO_VERSION}/calicoctl
     chmod +x calicoctl
     sudo mv calicoctl /usr/local/bin/
     calicoctl version
@@ -81,3 +82,35 @@ Refer to [packet capture](https://docs.tigera.io/visibility/packetcapture) docum
     tcpdump -Ar $(ls dev-* | head -1)
     tcpdump -Xr $(ls dev-* | head -1)
     ```
+
+## Configure deep packet inspection for sensitive workloads
+
+{{% notice tip %}}
+Refer to [deep packet inspection](https://docs.tigera.io/threat/deeppacketinspection) documentation for more details about this capability.
+{{% /notice %}}
+
+1. Configure deep packet inspection (DPI) resource.
+
+    Deploy DPI resource to allow Calico inspect packets bound for `dev/nginx` pods.
+
+    ```bash
+    kubectl apply -f demo/70-deep-packet-inspection/nginx-dpi.yaml
+    ```
+
+    >Once the `DeepPacketInspection` resource is deployed, Calico configures DPI controller to scan packets for endpoints matching the `selector` field configuration.
+
+    Wait until all DPI pods become `Ready`
+
+    ```bash
+    watch kubectl get po -n tigera-dpi
+    ```
+
+2. Simulate malicious request and review alerts.
+
+    Query `dev/nginx` application with payload that has a of a malicious payloads.
+
+    ```bash
+    kubectl -n dev exec -t centos -- sh -c "curl http://nginx-svc -H 'User-Agent: Mozilla/4.0' -XPOST --data-raw 'smk=1234'"
+    ```
+
+    Navigate to the Alerts view in Tigera UI and review alerts triggered by DPI controller. Calico DPI controller uses [Snort](https://www.snort.org/) signatures to perform DPI checks.
