@@ -26,7 +26,7 @@ the EKS IAM authentication, so we will disable it and rely on the IAM role inste
       sudo pip install --upgrade awscli && hash -r
       
       # Install jq command-line tool for parsing JSON, and bash-completion
-      sudo yum -y install jq gettext bash-completion moreutils
+      sudo yum -y install jq gettext bash-completion moreutils nc
       
       # Install yq for yaml processing
       echo 'yq() {
@@ -85,5 +85,12 @@ the EKS IAM authentication, so we will disable it and rely on the IAM role inste
       {{% notice warning %}}
    If the pods cannot be listed, <span style="color: red;">**DO NOT PROCEED**</span>. Please reach out to AWS Event Staff or confirm the last few steps. 
    {{% /notice %}}
+
+6. Clone `tigera-eks-workshop` Github repo
+
+      ```sh
+      git clone https://github.com/tigera-solutions/tigera-eks-workshop
+      cd tigera-eks-workshop
+      ```
 
 If you have completed the above instructions, move onto the Tigera Setup section!
