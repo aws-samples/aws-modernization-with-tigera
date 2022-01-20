@@ -46,9 +46,9 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     kubectl apply -f demo/dev/app.manifests.yaml
 
     # deploy boutiqueshop app stack
-    kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/release/v0.2.4/release/kubernetes-manifests.yaml
+    kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/master/release/kubernetes-manifests.yaml
     # set platform env var to "aws"
-    kubectl set env deploy frontend ENV_PLATFORM="aws"
+    #kubectl set env deploy frontend ENV_PLATFORM="aws"
     ```
 
 4. Deploy compliance reports.
@@ -78,26 +78,28 @@ This module is applicable to Calico Cloud or Calico Enterprise version v3.10+. I
     {{% /notice %}}
 
     {{% notice info %}}
-L7 collector is based on the Envoy proxy and deployed as a DaemonSet resource. For more details, see [Configure L7 logs](https://docs.tigera.io/v3.10/visibility/elastic/l7/configure#step-2-enable-l7-log-collection) documentation article.
+L7 collector is based on the Envoy proxy which gets automatically deployed via `ApplicationLayer` resource configuration. For more details, see [Configure L7 logs](https://docs.tigera.io/visibility/elastic/l7/configure) documentation page.
     {{% /notice %}}
 
-    a. Deploy Envoy proxy daemonset configuration.
+    a. Deploy `ApplicationLayer` resource.
 
     ```bash
-    # download Envoy config
-    curl https://docs.tigera.io/v3.10/manifests/l7/daemonset/envoy-config.yaml -O
-    # deploy Envoy config
-    kubectl create configmap envoy-config -n calico-system --from-file=envoy-config.yaml
+    kubectl apply -f - <<EOF
+    apiVersion: operator.tigera.io/v1
+    kind: ApplicationLayer
+    metadata:
+      name: tigera-secure
+    spec:
+      logCollection:
+        collectLogs: Enabled
+        logIntervalSeconds: 5
+        logRequestsPerInterval: -1
+EOF
     ```
 
-    b. Deploy L7 collector component.
-
-    ```bash
-    # deploy L7 collector
-    kubectl apply -f https://docs.tigera.io/v3.10/manifests/l7/daemonset/l7-collector-daemonset.yaml
-    # enable L7 log collection daemonset mode in Felix
-    kubectl patch felixconfiguration default --type='merge' -p '{"spec":{"tproxyMode":"Enabled"}}'
-    ```
+    {{% notice info %}}
+This creates `l7-log-collector` daemonset in the `calico-system` namespace which contains `enovy-proxy` pod for application log collection and security.
+    {{% /notice %}}
 
     c. Enable L7 logs for the application service.
 
