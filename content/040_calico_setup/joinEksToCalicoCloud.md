@@ -14,46 +14,62 @@ weight: 25
 Make sure to get your [Calico Cloud trial account](https://www.calicocloud.io) before proceeding.
 {{% /notice %}}
 
-1. Join EKS cluster to Calico Cloud management plane.
+1. Calico Cloud Registration
 
-    ![join EKS cluster](/images/join-eks-cluster.png)
+    After verifying email activation, a browser tab of the Calico Cloud UI is launched which will ask for a few personal details. After this step the Welcome screen shows four use cases which will give a quick tour for learning more. Pick a use case to continue. Tip: the menu icons on the left can be expanded to display the worded menu as shown:
 
-    Use Calico Cloud install script provided in the `Connect Cluster` wizard.
+    ![expand-menu](/images/expand-menu.png)
+
+2. Join EKS cluster to Calico Cloud management plane
+
+    Click the "Managed Cluster" in your left side of browser, enter the name of your cluster, select the Amazon EKS and click "Next"
+
+    ![connect-cluster](/images/connect-cluster.png)
+
+    A custom token is generated along with the Calico Cloud Installer Operator manifest. The command will look similar to:
 
     ```bash
-    # script would look similar to this
-    curl https://installer.calicocloud.io/xxxxxx_yyyyyyy-saay-management_install.sh | bash
-    ```
+    kubectl apply -f https://installer.calicocloud.io/manifests/cc-operator/latest/deploy.yaml && curl -H "Authorization: Bearer xxxxxxxxxxxx" "https://www.calicocloud.io/api/managed-cluster/deploy.yaml" | kubectl apply -f -
+    ``` 
 
-    >Joining the cluster to Calico Cloud can take a few minutes. Wait for the installation script to finish before you proceed to the next step.
-
-    The script will produce output similar to this:
+    Copy the output to clipboard and paste into your terminal to run. Output should look similar to:
 
     ```text
-    [INFO] Checking for installed CNI Plugin
-    [INFO] Deploying CRDs and Tigera Operator
-    [INFO] Creating Tigera Pull Secret
-    [INFO] Tigera Operator is Available
-    [INFO] Adding Installation CR for Enterprise install
-    [WAIT] Tigera calico is Progressing
-    [INFO] Tigera Calico is Available
-    [INFO] Deploying Tigera Prometheus Operator
-    podmonitors.monitoring.coreos.com
-    [INFO] Deploying APIServer CRs for Managed Cluster
-    [INFO] Deploying LogCollector CRs for Managed Cluster
-    [INFO] Tigera Apiserver is Available
-    [INFO] Generate New Cluster Registration Manifest
-    [INFO] Creating connection
-    [INFO] All Tigera Components are Available
-    [INFO] Securing Install
+    namespace/calico-cloud created
+    customresourcedefinition.apiextensions.k8s.io/installers.operator.calicocloud.io created
+    serviceaccount/calico-cloud-controller-manager created
+    role.rbac.authorization.k8s.io/calico-cloud-leader-election-role created
+    clusterrole.rbac.authorization.k8s.io/calico-cloud-metrics-reader created
+    clusterrole.rbac.authorization.k8s.io/calico-cloud-proxy-role created
+    rolebinding.rbac.authorization.k8s.io/calico-cloud-leader-election-rolebinding created
+    clusterrolebinding.rbac.authorization.k8s.io/calico-cloud-installer-rbac created
+    clusterrolebinding.rbac.authorization.k8s.io/calico-cloud-proxy-rolebinding created
+    configmap/calico-cloud-manager-config created
+    service/calico-cloud-controller-manager-metrics-service created
+    deployment.apps/calico-cloud-controller-manager created
+    % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                    Dload  Upload   Total   Spent    Left  Speed
+    100   355  100   355    0     0    541      0 --:--:-- --:--:-- --:--:--   541
+    secret/api-key created
+    installer.operator.calicocloud.io/aks-westus created
+    ``` 
 
-    Install Successful
-    Your Connected Cluster Name is  xxxxxxxx-management-managed-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-gr7-us-east-1-eks-amazonaws-com
+    Joining the cluster to Calico Cloud can take a few minutes. Meanwhile the Calico resources can be monitored until they are all reporting `Available` as `True`.
+
+    ```text
+    kubectl get tigerastatus
+                                                                                                                  
+    NAME                            AVAILABLE   PROGRESSING   DEGRADED   SINCE
+    apiserver                       True        False         False      96s
+    calico                          True        False         False      16s
+    compliance                      True        False         False      21s
+    intrusion-detection             True        False         False      41s
+    log-collector                   True        False         False      21s
+    management-cluster-connection   True        False         False      51s
+    monitor                         True        False         False      2m1s
     ```
 
-    >Note the management plane URL and any credentials that you see in the output as we will use them in the following modules.
-
-2. Configure log aggregation and flush intervals. Also, configure pod level TCP stats collection.
+3. Configure log aggregation and flush intervals. Also, configure pod level TCP stats collection.
 
     ```bash
     kubectl patch felixconfiguration.p default -p '{"spec":{"flowLogsFlushInterval":"10s"}}'
@@ -62,7 +78,7 @@ Make sure to get your [Calico Cloud trial account](https://www.calicocloud.io) b
     kubectl patch felixconfiguration.p default -p '{"spec":{"flowLogsCollectTcpStats":true}}'
     ```
 
-3. Enable Felix component Policy Sync API.
+4. Enable Felix component Policy Sync API.
 
     >[Felix](https://docs.tigera.io/reference/architecture/overview#felix) is one of Calico components that is responsible for configuring routes, ACLs, and anything else required on the host to provide desired connectivity for the endpoints on that host.
 

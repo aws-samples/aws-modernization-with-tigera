@@ -89,6 +89,10 @@ If a packet capture resource does not have `endTime` field, the capture would be
     kubectl delete -f demo/60-packet-capture/nginx-pcap.yaml
     ```
 
+{{% notice tip %}}
+   Note Packet Captures can also be created and scheduled directly from the Calico UI. Follow the Service Graph method for this alternative [procedure](https://docs.tigera.io/visibility/packetcapture#access-packet-capture-files-via-service-graph).
+{{% /notice %}}
+
 ## Configure deep packet inspection for sensitive workloads
 
 {{% notice tip %}}
@@ -113,7 +117,7 @@ Refer to [deep packet inspection](https://docs.tigera.io/threat/deeppacketinspec
 
 2. Simulate malicious request and review alerts.
 
-    Query `dev/nginx` application with payload that has a of a malicious payloads.
+    Query `dev/nginx` application with payload that triggers a Snort rule alert.
 
     ```bash
     kubectl -n dev exec -t centos -- sh -c "curl http://nginx-svc -H 'User-Agent: Mozilla/4.0' -XPOST --data-raw 'smk=1234'"

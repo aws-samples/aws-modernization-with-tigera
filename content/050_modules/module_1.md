@@ -47,8 +47,6 @@ We will work with resources located in the `tigera-eks-workshop` repository that
 
     # deploy boutiqueshop app stack
     kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/master/release/kubernetes-manifests.yaml
-    # set platform env var to "aws"
-    #kubectl set env deploy frontend ENV_PLATFORM="aws"
     ```
 
 4. Deploy compliance reports.
@@ -94,14 +92,14 @@ L7 collector is based on the Envoy proxy which gets automatically deployed via `
         collectLogs: Enabled
         logIntervalSeconds: 5
         logRequestsPerInterval: -1
-EOF
+    EOF
     ```
 
     {{% notice info %}}
-This creates `l7-log-collector` daemonset in the `calico-system` namespace which contains `enovy-proxy` pod for application log collection and security.
+This creates `l7-log-collector` daemonset in the `calico-system` namespace which contains `envoy-proxy` pod for application log collection and security.
     {{% /notice %}}
 
-    c. Enable L7 logs for the application service.
+    b. Enable L7 logs for the application service.
 
     {{% notice tip %}}
 To opt a service into L7 log collection, you need to annotate the service with `projectcalico.org/l7-logging=true` annotation.
