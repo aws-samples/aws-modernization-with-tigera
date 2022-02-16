@@ -11,5 +11,5 @@ weight: 20
 
   ```bash
   # script should look similar to this
-  curl https://installer.calicocloud.io/xxxxxx_yyyyyyy-saay-management_install.sh | bash
+  kubectl apply -f https://installer.calicocloud.io/manifests/cc-operator/latest/deploy.yaml && curl -H "Authorization: Bearer xxxxxx:yyyyyy:zzzzzzzz" "https://www.calicocloud.io/api/managed-cluster/deploy.yaml" | kubectl apply -f -
   ```
