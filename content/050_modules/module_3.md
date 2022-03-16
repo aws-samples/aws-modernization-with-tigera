@@ -120,7 +120,11 @@ Refer to [deep packet inspection](https://docs.tigera.io/threat/deeppacketinspec
     Query `dev/nginx` application with payload that triggers a Snort rule alert.
 
     ```bash
+    # example before v3.11
     kubectl -n dev exec -t centos -- sh -c "curl http://nginx-svc -H 'User-Agent: Mozilla/4.0' -XPOST --data-raw 'smk=1234'"
+
+    # example for v3.11+
+    kubectl -n uat exec -t netshoot -- sh -c "curl http://nginx-svc/secid_canceltoken.cgi -H 'X-CMD: Test' -H 'X-KEY: Test' -XPOST"
     ```
 
     Navigate to the Alerts view in Tigera UI and review alerts triggered by DPI controller. Calico DPI controller uses [Snort](https://www.snort.org/) signatures to perform DPI checks.
