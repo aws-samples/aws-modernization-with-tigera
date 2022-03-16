@@ -120,10 +120,10 @@ Refer to [deep packet inspection](https://docs.tigera.io/threat/deeppacketinspec
     Query `dev/nginx` application with payload that triggers a Snort rule alert.
 
     ```bash
-    # example before v3.11
+    # example for <= v3.11.1
     kubectl -n dev exec -t centos -- sh -c "curl http://nginx-svc -H 'User-Agent: Mozilla/4.0' -XPOST --data-raw 'smk=1234'"
 
-    # example for v3.11+
+    # example for >= v3.11.2
     kubectl -n uat exec -t netshoot -- sh -c "curl http://nginx-svc/secid_canceltoken.cgi -H 'X-CMD: Test' -H 'X-KEY: Test' -XPOST"
     ```
 
