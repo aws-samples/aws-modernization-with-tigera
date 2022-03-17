@@ -21,21 +21,24 @@ Click on the **Open IDE** button and you will see your pre-configured environmen
 Once you have logged into the AWS Management Console from your EventEngine team landing page, you will already have an EKS cluster and Cloud9 environment. A few additional steps are required to configure Cloud9. Please follow the steps below.
 
 1. Navigate to Cloud9 in the AWS Management console and launch the EKS IDE. It may take a few minutes to start.
-* Select the gear icon in the upper right (or else select the "9" icon>Preferences in the upper left)
-    1. Scroll down to "AWS Settings" in the "Preferences" tab.
-    2. Under "Credentials", disable "AWS managed temporary credentials".
-    3. Close the "Preferences" tab.
-    4. Close the "AWS Cloud9 Welcome" and "AWS Toolkit" tabs.
-* Open a new terminal tab by clicking the green "+" sign and selecting "New Terminal".
-    1. Copy and run this command:
+* Select the gear icon in the upper right
+    - Scroll down to "AWS Settings" in the "Preferences" tab.
+    - Under "Credentials", disable "AWS managed temporary credentials".
+    - Close the "Preferences" tab.
+    - Close the "AWS Cloud9 Welcome" and "AWS Toolkit" tabs.
+
+![turnoffmanagedcredentials](/images/cloud9-turn-off-managed-credentails.png)
+
+Copy and run this command in your terminal as it will download and run a script that will install all the utilities that we will need to complete todays workshop. 
        ```bash
        aws s3 cp s3://ee-assets-prod-us-east-1/modules/ad831bb586fb4f77ad39569fdf52fe6d/v1/eksinit.sh . && chmod +x eksinit.sh && ./eksinit.sh ; source ~/.bash_profile
        ```
-    2. You can test access to your cluster by running the following command. The output will be a list of worker nodes.
-       ```bash
-       kubectl get nodes
-       ```
-You should then see the a similar output to the following
+
+You can test access to your cluster by running the following command. 
+```bash
+kubectl get nodes
+```
+You should then see the a similar output to the following that shows a list of your worker nodes. 
 
 ```bash
 ip-192-168-103-203.us-east-2.compute.internal   Ready    <none>   26h   v1.20.11-eks-f17b81

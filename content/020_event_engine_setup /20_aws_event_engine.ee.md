@@ -26,7 +26,8 @@ If you are currently logged in to an AWS Account, you can log out using this [li
 
 * us-east-2 (US East - Ohio)
 
-Please select **US East (Ohio)** in the top right corner.
+**If your region is something set to a region that is not us-east-2, please let the person running the event know**
+
 
 ![Event Engine Region](/images/modernization-workshop-region-check.png)
 

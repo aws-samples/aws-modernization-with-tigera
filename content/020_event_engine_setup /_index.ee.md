@@ -7,12 +7,12 @@ weight: 3
 
 # Event Engine
 
-Welcome to the Event Engine Setup section! This means that you are attending an AWS Hosted Workshop with an AWS Instructor! If you are not attending an event where there is an AWS Instructor or if you are doing this workshop via AWS Marketplace, **you are not in the right setup section,** please go to the [self guided setup section](030_self_guided_setup.html"). 
+Welcome to the Event Engine Setup section! This means that you are attending an AWS Hosted Workshop with an AWS Instructor! If you are not attending an event where there is an AWS Instructor or if you are doing this workshop via AWS Marketplace, **you are not in the right setup section,** please go to the [self guided setup section](https://tigera.awsworkshop.io/030_self_guided_setup.html). 
 
 Event Engine is a tool created at AWS that provisions AWS accounts for workshop events like this! These accounts will automatically terminate 24 hours after the workshop begins participants don't have to worry about leaving anything on. Each workshop participant will receive their own Event Engine AWS account. 
 
-Your Event Engine account will come with a Cloud9 environment along with an Amazon EKS cluster with 3 nodes. 
+Your Event Engine account will come with a Cloud9 environment along with an Amazon EKS cluster with 3 worker nodes running on m5.large instances. 
 
-The next page will show you how to gain access to your Event Engine dashboard!
+The next page will show you how to gain access to your Event Engine account to use for this workshop!
 
 
