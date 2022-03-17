@@ -11,12 +11,8 @@ Welcome to the Event Engine Setup section! This means that you are attending an 
 
 Event Engine is a tool created at AWS that provisions AWS accounts for workshop events like this! These accounts will automatically terminate 24 hours after the workshop begins participants don't have to worry about leaving anything on. Each workshop participant will receive their own Event Engine AWS account. 
 
-Here is a preview of what we will be setting up:
-
-1. Creating a Cloud9 IDE Workspace
-1. Attaching an EKS role to the Cloud9 instance
-1. Installing kubectl + other config updates on your Cloud9 instance
+Your Event Engine account will come with a Cloud9 environment along with an Amazon EKS cluster with 3 nodes. 
 
 The next page will show you how to gain access to your Event Engine dashboard!
 
-test
+
