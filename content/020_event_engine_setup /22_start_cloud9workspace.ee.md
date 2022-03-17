@@ -8,12 +8,6 @@ weight: 12
 
 [AWS Cloud9](https://aws.amazon.com/cloud9/) is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular programming languages, including JavaScript, Python, PHP, and more, so you don’t need to install files or configure your laptop for this workshop.
 
-We will use Amazon Cloud9 to access our AWS accounts via the AWS CLI in this Workshop.  There are a few steps to complete to set this up
-
-1. Check that your Cloud9 environment has the right IAM permissions + role attached
-1. Run shell script to install the utilities that we will need for this workshop
-1. Configure workshop specific requirements
-
 ## Access Cloud9 in AWS Management Console 
 
 Once you have logged into the AWS Management Console from your EventEngine team landing page, you will already have an EKS cluster and Cloud9 environment. A few additional steps are required to configure Cloud9 and install the tools as follows. Below set of instructions are also available in the **readme** link in the Event Engine Dashboard.
