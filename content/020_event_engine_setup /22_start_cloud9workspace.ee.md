@@ -30,9 +30,10 @@ Once you have logged into the AWS Management Console from your EventEngine team 
 ![turnoffmanagedcredentials](/images/cloud9-turn-off-managed-credentails.png)
 
 Copy and run this command in your terminal as it will download and run a script that will install all the utilities that we will need to complete todays workshop. 
-       ```bash
-       aws s3 cp s3://ee-assets-prod-us-east-1/modules/ad831bb586fb4f77ad39569fdf52fe6d/v1/eksinit.sh . && chmod +x eksinit.sh && ./eksinit.sh ; source ~/.bash_profile
-       ```
+
+```bash
+aws s3 cp s3://ee-assets-prod-us-east-1/modules/ad831bb586fb4f77ad39569fdf52fe6d/v1/eksinit.sh . && chmod +x eksinit.sh && ./eksinit.sh ; source ~/.bash_profile
+```
 
 You can test access to your cluster by running the following command. 
 ```bash
