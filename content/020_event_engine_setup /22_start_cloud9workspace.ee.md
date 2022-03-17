@@ -24,8 +24,9 @@ Once you have logged into the AWS Management Console from your EventEngine team 
 Click on the **Open IDE** button and you will see your pre-configured environment. 
 
 ## Lab environment
-* Once you have logged into the AWS Management Console from your EventEngine team landing page, you will already have an EKS cluster and Cloud9 environment. A few additional steps are required to configure Cloud9 and install the tools as follows:
-* Navigate to Cloud9 in the AWS Management console and launch the EKS IDE. It may take a few minutes to start.
+Once you have logged into the AWS Management Console from your EventEngine team landing page, you will already have an EKS cluster and Cloud9 environment. A few additional steps are required to configure Cloud9. Please follow the steps below.
+
+1. Navigate to Cloud9 in the AWS Management console and launch the EKS IDE. It may take a few minutes to start.
 * Select the gear icon in the upper right (or else select the "9" icon>Preferences in the upper left)
     1. Scroll down to "AWS Settings" in the "Preferences" tab.
     2. Under "Credentials", disable "AWS managed temporary credentials".
