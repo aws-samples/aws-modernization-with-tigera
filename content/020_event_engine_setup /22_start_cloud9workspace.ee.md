@@ -8,46 +8,46 @@ weight: 12
 
 [AWS Cloud9](https://aws.amazon.com/cloud9/) is a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser. It includes a code editor, debugger, and terminal. Cloud9 comes prepackaged with essential tools for popular programming languages, including JavaScript, Python, PHP, and more, so you don’t need to install files or configure your laptop for this workshop.
 
-We will use Amazon Cloud9 to access our AWS accounts via the AWS CLI in this Workshop.  There are a few steps to complete to set this up
+## Access Cloud9 in AWS Management Console 
 
-1. Create a new Cloud9 IDE environment
-1. Attach the IAM role to your workspace
-1. Configure workshop specific requirements
+Once you have logged into the AWS Management Console from your EventEngine team landing page, you will already have an EKS cluster and Cloud9 environment. A few additional steps are required to configure Cloud9 and install the tools as follows. Below set of instructions are also available in the **readme** link in the Event Engine Dashboard.
 
 
-## Create a new Cloud9 IDE environment
+![cloudd9](/images/event-engine-cloud9-dashboard.png)
 
-1. Within the AWS console, use the region drop list to select **us-east-1 (N. Virginia)**.  This will ensure the workshop script provisions the resources in this same region..
+Click on the **Open IDE** button and you will see your pre-configured environment. 
 
-1. Navigate to the [Cloud9 console](https://console.aws.amazon.com/cloud9/home) or just search for it under the **AWS console services** menu.
+## Lab environment
+Once you have logged into the AWS Management Console from your EventEngine team landing page, you will already have an EKS cluster and Cloud9 environment. A few additional steps are required to configure Cloud9. Please follow the steps below.
 
-1. Click the **Create environment** button
+1. Navigate to Cloud9 in the AWS Management console and launch the EKS IDE. It may take a few minutes to start.
+* Select the gear icon in the upper right
+    - Scroll down to "AWS Settings" in the "Preferences" tab.
+    - Under "Credentials", disable "AWS managed temporary credentials".
+    - Close the "Preferences" tab.
+    - Close the "AWS Cloud9 Welcome" and "AWS Toolkit" tabs.
 
-1. For the name use `tigera-workshop`, then click **Next step**
+![turnoffmanagedcredentials](/images/cloud9-turn-off-managed-credentails.png)
 
-1. Select the default instance type **t2.micro**
+Copy and run this command in your terminal as it will download and run a script that will install all the utilities that we will need to complete todays workshop. 
 
-1. Leave all the other settings as default and click **Next step** followed by **Create environment**
+```bash
+aws s3 cp s3://ee-assets-prod-us-east-1/modules/ad831bb586fb4f77ad39569fdf52fe6d/v1/eksinit.sh . && chmod +x eksinit.sh && ./eksinit.sh ; source ~/.bash_profile
+```
 
-<img src=/images/c9-create.png>
+You can test access to your cluster by running the following command. 
+```bash
+kubectl get nodes
+```
+You should then see the a similar output to the following that shows a list of your worker nodes. 
 
-{{% notice info %}}
-This will take about 1-2 minutes to provision
-{{% /notice %}}
+```bash
+ip-192-168-103-203.us-east-2.compute.internal   Ready    <none>   26h   v1.20.11-eks-f17b81
+ip-192-168-135-115.us-east-2.compute.internal   Ready    <none>   26h   v1.20.11-eks-f17b81
+ip-192-168-162-61.us-east-2.compute.internal    Ready    <none>   26h   v1.20.11-eks-f17b81
+```
 
-### Configure Cloud9 IDE environment
-
-When the environment comes up, customize the environment by:
-
-1. Close the **welcome page** tab
-
-2. Close the **lower work area** tab
-
-3. Open a new **terminal** tab in the main work area.
-
-{{% notice tip %}}
-If you don't like this dark theme, you can change it from the **View / Themes** Cloud9 workspace menu.
-{{% /notice %}}
+You are now ready to move on to the next step!
 
 {{% notice tip %}}
 Cloud9 requires third-party-cookies. You can whitelist the [specific domains](https://docs.aws.amazon.com/cloud9/latest/user-guide/troubleshooting.html#troubleshooting-env-loading).  You are having issues with this, Ad blockers, javascript disablers, and tracking blockers should be disabled for the cloud9 domain, or connecting to the workspace might be impacted.
