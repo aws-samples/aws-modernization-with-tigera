@@ -244,6 +244,10 @@ To opt a service into L7 log collection, you need to annotate the service with `
     # try to ping any of the IPs in from the feodo tracker list
     IP=$(kubectl get globalnetworkset threatfeed.feodo-tracker -ojson | jq .spec.nets[0] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
     kubectl -n dev exec -t centos -- sh -c "ping -c1 $IP"
+
+    # example using alienvault threatfeed in Calico Cloud
+    IP=$(kubectl get globalnetworksets -l feed=otx-ipthreatfeed -ojson | jq .items[0].spec.nets[0] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
+    kubectl -n dev exec -t centos -- sh -c "curl -S -m2 $IP 2>/dev/null"
     ```
 
 ## Secure egress access for specific workloads
