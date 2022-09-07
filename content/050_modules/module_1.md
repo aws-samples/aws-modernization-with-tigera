@@ -46,7 +46,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     kubectl apply -f demo/dev/app.manifests.yaml
 
     # deploy boutiqueshop app stack
-    kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/master/release/kubernetes-manifests.yaml
+    kubectl apply -f https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/release/v0.3.8/release/kubernetes-manifests.yaml
     ```
 
 4. Deploy compliance reports.
@@ -66,6 +66,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     kubectl apply -f demo/50-alerts/globalnetworkset.changed.yaml
     kubectl apply -f demo/50-alerts/unsanctioned.dns.access.yaml
     kubectl apply -f demo/50-alerts/unsanctioned.lateral.access.yaml
+    kubectl apply -f demo/50-alerts/boutiqueshop.unsanctioned.access.yaml
     ```
 
 6. *[Bonus task]* Configure *frontend* service for L7 log data collection
@@ -243,6 +244,10 @@ To opt a service into L7 log collection, you need to annotate the service with `
     # try to ping any of the IPs in from the feodo tracker list
     IP=$(kubectl get globalnetworkset threatfeed.feodo-tracker -ojson | jq .spec.nets[0] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
     kubectl -n dev exec -t centos -- sh -c "ping -c1 $IP"
+
+    # example using alienvault threatfeed in Calico Cloud
+    IP=$(kubectl get globalnetworksets -l feed=otx-ipthreatfeed -ojson | jq .items[0].spec.nets[0] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
+    kubectl -n dev exec -t centos -- sh -c "curl -S -m2 $IP 2>/dev/null"
     ```
 
 ## Secure egress access for specific workloads
