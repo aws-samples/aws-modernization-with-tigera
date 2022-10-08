@@ -36,7 +36,9 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     In order to explicitly allow workloads to connect to the Kubernetes DNS component, we are going to implement a policy that controls such traffic.
 
     ```bash
-    kubectl apply -f demo/10-security-controls/allow-kube-dns.yaml
+    kubectl apply -f demo/01-base/allow-kube-dns.yaml
+    kubectl apply -f demo/01-base/tiers-pass-policy.yaml
+    kubectl apply -f demo/01-base/quarantine-policy.yaml
     ```
 
 3. Deploy demo applications.
@@ -121,7 +123,7 @@ To opt a service into L7 log collection, you need to annotate the service with `
     Install **curl** packages onto **loadgenerator** pod.
 
     ```bash
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'apt-get update && apt-get install -y curl && curl --help'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'apt-get update && apt-get install -y curl && curl --help'
     ```
 
 2. Test connectivity between application components and across application stacks.
@@ -130,30 +132,30 @@ To opt a service into L7 log collection, you need to annotate the service with `
 
     ```bash
     # test connectivity within dev namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://nginx-svc 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://nginx-svc 2>/dev/null | grep -i http'
 
     # test connectivity within default namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI frontend 2>/dev/null | grep -i http'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'curl -m2 -sI frontend 2>/dev/null | grep -i http'
     ```
 
     b. Test connectivity across namespaces.
 
     ```bash
     # test connectivity from dev namespace to default namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://frontend.default 2>/dev/null | grep -i http'
 
     # test connectivity from default namespace to dev namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI http://nginx-svc.dev 2>/dev/null | grep -i http'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'curl -m2 -sI http://nginx-svc.dev 2>/dev/null | grep -i http'
     ```
 
     c. Test connectivity from each namespace to the Internet.
 
     ```bash
     # test connectivity from dev namespace to the Internet
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://www.google.com 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://www.google.com 2>/dev/null | grep -i http'
 
     # test connectivity from default namespace to the Internet
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI www.google.com 2>/dev/null | grep -i http'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'curl -m2 -sI www.google.com 2>/dev/null | grep -i http'
     ```
 
     All of these tests should succeed if there are no policies in place to govern the traffic for `dev` and `default` namespaces.
@@ -170,7 +172,7 @@ To opt a service into L7 log collection, you need to annotate the service with `
 
     ```bash
     # make a request across namespaces and view Packets by Policy histogram
-    for i in {1..10}; do kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'; sleep 2; done
+    for i in {1..10}; do kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://frontend.default 2>/dev/null | grep -i http'; sleep 2; done
     ```
 
     >The staged policy does not affect the traffic directly but allows you to view the policy impact if it were to be enforced.
@@ -203,30 +205,30 @@ To opt a service into L7 log collection, you need to annotate the service with `
 
     ```bash
     # test connectivity within dev namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://nginx-svc 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://nginx-svc 2>/dev/null | grep -i http'
 
     # test connectivity within default namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI frontend 2>/dev/null | grep -i http'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'curl -m2 -sI frontend 2>/dev/null | grep -i http'
     ```
 
     b. The connections across `dev` and `default` namespaces should be **blocked** by the global `default-deny` policy.
 
     ```bash
     # test connectivity from dev namespace to default namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://frontend.default 2>/dev/null | grep -i http'
 
     # test connectivity from default namespace to dev namespace
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI http://nginx-svc.dev 2>/dev/null | grep -i http'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'curl -m2 -sI http://nginx-svc.dev 2>/dev/null | grep -i http'
     ```
 
     c. The connections to the Internet should be **blocked** by the configured policies.
 
     ```bash
     # test connectivity from dev namespace to the Internet
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://www.google.com 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://www.google.com 2>/dev/null | grep -i http'
 
     # test connectivity from default namespace to the Internet
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -- sh -c 'curl -m3 -sI www.google.com 2>/dev/null | grep -i http'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'curl -m2 -sI www.google.com 2>/dev/null | grep -i http'
     ```
 
 6. Protect workloads from known bad actors.
@@ -258,15 +260,15 @@ To opt a service into L7 log collection, you need to annotate the service with `
 
     ```bash
     # test connectivity from dev namespace to default namespace
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://frontend.default 2>/dev/null | grep -i http'
     ```
 
     b. Test connectivity from `dev/centos` to the external endpoints.
 
     ```bash
     # test connectivity from dev namespace to the Internet
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -skI https://api.twilio.com 2>/dev/null | grep -i http'
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://www.google.com 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -skI https://api.twilio.com 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://www.google.com 2>/dev/null | grep -i http'
     ```
 
     The access should be denied as the policies configured in previous module do not allow it.
@@ -282,7 +284,7 @@ To opt a service into L7 log collection, you need to annotate the service with `
     b. Test connectivity between `dev/centos` pod and `default/frontend` service.
 
     ```bash
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -sI http://frontend.default 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -sI http://frontend.default 2>/dev/null | grep -i http'
     ```
 
     The access should be allowed once the egress policy is in place.
@@ -296,9 +298,9 @@ To opt a service into L7 log collection, you need to annotate the service with `
     kubectl apply -f demo/20-egress-access-controls/dns-policy.yaml
 
     # test egress access to api.twilio.com
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -skI https://api.twilio.com 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -skI https://api.twilio.com 2>/dev/null | grep -i http'
     # test egress access to www.google.com
-    kubectl -n dev exec -t centos -- sh -c 'curl -m3 -skI https://www.google.com 2>/dev/null | grep -i http'
+    kubectl -n dev exec -t centos -- sh -c 'curl -m2 -skI https://www.google.com 2>/dev/null | grep -i http'
     ```
 
     Access to the `api.twilio.com` endpoint should be allowed by the DNS policy but not to any other external endpoints like `www.google.com` unless we modify the policy to include that domain name.
