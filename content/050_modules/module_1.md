@@ -24,7 +24,7 @@ We will work with resources located in the `tigera-eks-workshop` repository that
     We are going to deploy some policies into policy tier to take advantage of hierarcical policy management.
 
     ```bash
-    kubectl apply -f demo/tiers/tiers.yaml
+    kubectl apply -f demo/00-tiers/tiers.yaml
     ```
 
     This will add tiers `security` and `platform` to the Calico cluster.
@@ -123,7 +123,7 @@ To opt a service into L7 log collection, you need to annotate the service with `
     Install **curl** packages onto **loadgenerator** pod.
 
     ```bash
-    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'apt-get update && apt-get install -y curl && curl --help'
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c 'apt-get update && apt-get install -y curl iputils-ping && curl --help'
     ```
 
 2. Test connectivity between application components and across application stacks.
@@ -237,15 +237,30 @@ To opt a service into L7 log collection, you need to annotate the service with `
 
     >Calico offers other intrusion detection capabilities such as Honeypods, Anomaly Detection, and more which are outside of the scope of this workshop. Refer to [Calico use cases](https://www.tigera.io/tigera-products/threat-defense/) for more details about Calico IDS capabilities.
 
+    Deploy the Feodo thread feed.
+
     ```bash
     # deploy feodo tracker threatfeed
     kubectl apply -f demo/10-security-controls/feodotracker.threatfeed.yaml
+    ```
+
+    Test access to one of the IPs in the threat feed.
+
+    ```bash
+    # try to ping any of the IPs in from the feodo tracker list
+    IP=$(kubectl get globalnetworkset threatfeed.feodo-tracker -ojson | jq .spec.nets[3] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c "ping -c1 $IP"
+    ```
+
+    Configure a policy to block any attempts to connect to the endpoints from the threat feed.
+
+    ```bash
     # deploy network policy that uses the threadfeed
     kubectl apply -f demo/10-security-controls/feodo-block-policy.yaml
 
     # try to ping any of the IPs in from the feodo tracker list
-    IP=$(kubectl get globalnetworkset threatfeed.feodo-tracker -ojson | jq .spec.nets[0] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
-    kubectl -n dev exec -t centos -- sh -c "ping -c1 $IP"
+    IP=$(kubectl get globalnetworkset threatfeed.feodo-tracker -ojson | jq .spec.nets[3] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
+    kubectl exec -it $(kubectl get po -l app=loadgenerator -ojsonpath='{.items[0].metadata.name}') -c main -- sh -c "ping -c1 $IP"
 
     # example using alienvault threatfeed in Calico Cloud
     IP=$(kubectl get globalnetworksets -l feed=otx-ipthreatfeed -ojson | jq .items[0].spec.nets[0] | sed -e 's/^"//' -e 's/"$//' -e 's/\/32//')
