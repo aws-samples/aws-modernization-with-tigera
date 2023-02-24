@@ -35,7 +35,7 @@ The `Policies Board` shows all policies deployed in the cluster and organized in
 
 By leveraging stats controls you can toggle additional metrics to be listed for each shown policy.
 
-![policies board stats](../images/policies-board-stats.png)
+![policies board stats](/images/policies-board-stats.png)
 
 ### Audit timeline
 
