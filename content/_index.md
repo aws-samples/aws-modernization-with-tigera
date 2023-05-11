@@ -60,3 +60,11 @@ Generate Compliance reports for regulatory requirements and policy violations.
 {{% notice tip %}}
 To learn more about installing Calico on EKS Cluster, please click [here](https://docs.aws.amazon.com/eks/latest/userguide/calico.html).
 {{% /notice %}}
+
+### Module 5 - Vulnerability management
+
+Use Calico Cloud image assurance tools to scan images for vulnerabilities and configure admission rules for containers.
+
+{{% notice tip %}}
+To learn more about Image Assurance and Vulnerability Management, please click [here](https://docs.tigera.io/calico-cloud/image-assurance/).
+{{% /notice %}}
