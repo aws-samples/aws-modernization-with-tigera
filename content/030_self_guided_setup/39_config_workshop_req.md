@@ -19,7 +19,7 @@ In this section, we will be installing a few tools to help in running through th
     # Set the ACCOUNT_ID and the region to work with our desired region
     export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
     export AZS=($(aws ec2 describe-availability-zones --query 'AvailabilityZones[].ZoneName' --output text --region $AWS_REGION))
-    EKS_VERSION="1.21"
+    EKS_VERSION="1.26"
     IAM_ROLE='tigera-workshop-admin'
     test -n "$AWS_REGION" && echo AWS_REGION is "$AWS_REGION" || echo AWS_REGION is not set
 
