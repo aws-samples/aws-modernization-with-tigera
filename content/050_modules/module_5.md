@@ -21,7 +21,7 @@ Manage discovered vulnerabilities of applications deployed into the cluster.
     >Note that the scanner version in the command below maybe outdated as the scanner binary is often updated with each release of Calico Cloud. Follow the docs to get the most recent `tigera-scanner` binary.
 
     ```bash
-    curl -Lo tigera-scanner https://installer.calicocloud.io/tigera-scanner/v3.16.1-5/image-assurance-scanner-cli-linux-amd64
+    curl -Lo tigera-scanner https://installer.calicocloud.io/tigera-scanner/v3.16.1-11/image-assurance-scanner-cli-linux-amd64
     chmod +x ./tigera-scanner
     ./tigera-scanner version
     ```
@@ -62,17 +62,16 @@ Manage discovered vulnerabilities of applications deployed into the cluster.
 
     >See [image assurance](https://docs.tigera.io/calico-cloud/image-assurance/install-the-admission-controller#install-the-admission-controller) docs to get the most recent version.
 
+    >NOTE: if your workstation has OpenSSL of version 1.0.2 or any other version that doesn't contain `-addext` flag, update OpenSSL to version 1.1.x or newer and make sure  that `openssl` executable invokes new version of OpenSSL. 
+    On Amazon Linux 2 you can do it with this line: `sudo yum install -y openssl11 && sudo ln -s /usr/bin/openssl11 /usr/bin/openssl`
+
     ```bash
     # get most recent versions and adjust these vars
-    IA_VERSION='v3.16.1-5'
-    IA_AC_VERSION='v1.6.2'
+    IA_VERSION='v3.16.1-11'
+    IA_AC_VERSION='v1.7.3'
 
     # generate certificates
     curl https://installer.calicocloud.io/manifests/${IA_VERSION}/manifests/generate-open-ssl-key-cert-pair.sh | bash
-
-    # base64 encode the cert and the key
-    base64 < admission_controller_cert.pem
-    base64 < admission_controller_key.pem
 
     # deploy admission controller
     sed -e "s/BASE64_CERTIFICATE/$(printf '%q' `base64 < admission_controller_cert.pem`)/g" -e "s/BASE64_KEY/$(printf '%q' `base64 < admission_controller_key.pem`)/g" -e "s/IA_AC_VERSION/$IA_AC_VERSION/g" demo/80-image-assurance/tigera-image-assurance-admission-controller-deploy.yaml | kubectl apply -f-

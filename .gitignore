@@ -1,7 +1,7 @@
 *.swp
 *.*~
 project.lock.json
-.DS_Store
+**/.DS_Store
 *.pyc
 
 # User-specific files
